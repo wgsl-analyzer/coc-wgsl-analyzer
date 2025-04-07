@@ -20,7 +20,6 @@ You can use these commands by `:CocCommand XYZ`.
 | -- | -- |
 | wgsl-analyzer.analyzerStatus | Show wgsl-analyzer status |
 | wgsl-analyzer.debug | List available runnables of current file and debug the selected one |
-| wgsl-analyzer.expandMacro | Expand macro recursively |
 | wgsl-analyzer.explainError | Explain the currently hovered error message |
 | wgsl-analyzer.joinLines | Join lines |
 | wgsl-analyzer.matchingBrace | Find matching brace |
@@ -29,7 +28,6 @@ You can use these commands by `:CocCommand XYZ`.
 | wgsl-analyzer.moveItemDown | Move item down |
 | wgsl-analyzer.openDocs | Open docs under cursor |
 | wgsl-analyzer.parentModule | Locate parent module |
-| wgsl-analyzer.peekTests | Peek related tests |
 | wgsl-analyzer.reload | Restart wgsl-analyzer server |
 | wgsl-analyzer.reloadWorkspace | Reload workspace |
 | wgsl-analyzer.run | List available runnables of current file and run the selected one |
@@ -39,16 +37,13 @@ You can use these commands by `:CocCommand XYZ`.
 | wgsl-analyzer.testCurrent | Test Current |
 | wgsl-analyzer.install | Install latest `wgsl-analyzer` from [GitHub release](https://github.com/wgsl-analyzer/wgsl-analyzer/releases) |
 | wgsl-analyzer.upgrade | Download latest `wgsl-analyzer` from [GitHub release](https://github.com/wgsl-analyzer/wgsl-analyzer/releases) |
-| wgsl-analyzer.viewHir | View Hir |
-| wgsl-analyzer.viewMir | View Mir |
 | wgsl-analyzer.viewFileText | View File Text |
-| wgsl-analyzer.viewCrateGraph | View Crate Graph |
-| wgsl-analyzer.viewFullCrateGraph | View Crate Graph (Full) |
-| wgsl-analyzer.shuffleCrateGraph | Shuffle Crate Graph |
+| wgsl-analyzer.viewPackageGraph | View Package Graph |
+| wgsl-analyzer.viewFullPackageGraph | View Package Graph (Full) |
+| wgsl-analyzer.shufflePackageGraph | Shuffle Package Graph |
 | wgsl-analyzer.runFlycheck | Run flycheck |
 | wgsl-analyzer.cancelFlycheck | Cancel running flychecks |
 | wgsl-analyzer.clearFlycheck | Clear flycheck diagnostics |
-| wgsl-analyzer.rebuildProcMacros | Rebuild proc macros and build scripts |
 | wgsl-analyzer.interpretFunction | Interpret Function |
 
 ## License
