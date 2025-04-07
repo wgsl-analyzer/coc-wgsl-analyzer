@@ -17,7 +17,7 @@ export async function activate(context: ExtensionContext): Promise<void> {
 
   const bin = ctx.resolveBin();
   if (!bin) {
-    let msg = 'Rust Analyzer is not found, download from GitHub release?';
+    let msg = 'wgsl-analyzer is not found, download from GitHub release?';
     let ret = ctx.config.prompt === 'neverDownload' ? -1 : 0;
     if (ctx.config.prompt === true) {
       ret = await window.showQuickpick(['Yes', 'Cancel'], msg);
@@ -29,7 +29,7 @@ export async function activate(context: ExtensionContext): Promise<void> {
         await downloadServer(context, latest);
       } catch (e) {
         console.error(e);
-        msg = 'Download rust-analyzer failed, you can get it from https://github.com/rust-analyzer/rust-analyzer';
+        msg = 'Download wgsl-analyzer failed, you can get it from https://github.com/wgsl-analyzer/wgsl-analyzer';
         window.showErrorMessage(msg);
         return;
       }

@@ -1,25 +1,25 @@
 {
-  "rust-analyzer.enable": {
+  "wgsl-analyzer.enable": {
     "type": "boolean",
-    "markdownDescription": "Enable `coc-rust-analyzer`",
+    "markdownDescription": "Enable `coc-wgsl-analyzer`",
     "default": true
   },
-  "rust-analyzer.disableProgressNotifications": {
+  "wgsl-analyzer.disableProgressNotifications": {
     "type": "boolean",
     "default": false,
     "markdownDescription": "Disable initialization and workdone progress notifications"
   },
-  "rust-analyzer.disablePullDiagnostic": {
+  "wgsl-analyzer.disablePullDiagnostic": {
     "type": "boolean",
     "default": true,
     "markdownDescription": "Disable pullDiagnostic feature"
   },
-  "rust-analyzer.terminal.startinsert": {
+  "wgsl-analyzer.terminal.startinsert": {
     "type": "boolean",
     "default": false,
     "markdownDescription": "Enter insert mode after terminal displayed"
   },
-  "rust-analyzer.debug.runtime": {
+  "wgsl-analyzer.debug.runtime": {
     "type": "string",
     "default": "termdebug",
     "enum": [
@@ -34,38 +34,38 @@
       "`\"nvim-dap\"` use nvim-dap plugin"
     ]
   },
-  "rust-analyzer.debug.vimspector.configuration.name": {
+  "wgsl-analyzer.debug.vimspector.configuration.name": {
     "type": "string",
     "default": "launch",
     "markdownDescription": "Specify the name of the vimspector configuration name. The following args will be passed to the configuration: `Executable` and `Args` (both strings)"
   },
-  "rust-analyzer.debug.nvimdap.configuration.template": {
+  "wgsl-analyzer.debug.nvimdap.configuration.template": {
     "type": "string",
     "default": "",
     "markdownDescription": "Configuration template used to invoked dap.run([conf](https://github.com/mfussenegger/nvim-dap/blob/0e6b7c47dd70e80793ed39271b2aa712d9366dbc/doc/dap.txt#L656C2-L656C2)). The template will be instantiate like thie: `$exe` will be replaced with executable path, `$args` will be replaced with arguments."
   },
-  "rust-analyzer.server.path": {
+  "wgsl-analyzer.server.path": {
     "type": [
       "null",
       "string"
     ],
     "default": null,
-    "markdownDescription": "Path to rust-analyzer executable (points to bundled binary by default). If this is set, then \"rust-analyzer.updates.channel\" setting is not used"
+    "markdownDescription": "Path to wgsl-analyzer executable (points to bundled binary by default). If this is set, then \"wgsl-analyzer.updates.channel\" setting is not used"
   },
-  "rust-analyzer.server.extraEnv": {
+  "wgsl-analyzer.server.extraEnv": {
     "type": [
       "null",
       "object"
     ],
     "default": null,
-    "markdownDescription": "Extra environment variables that will be passed to the rust-analyzer executable. Useful for passing e.g. `RA_LOG` for debugging."
+    "markdownDescription": "Extra environment variables that will be passed to the wgsl-analyzer executable. Useful for passing e.g. `RA_LOG` for debugging."
   },
-  "rust-analyzer.restartServerOnConfigChange": {
+  "wgsl-analyzer.restartServerOnConfigChange": {
     "markdownDescription": "Whether to restart the server automatically when certain settings that require a restart are changed.",
     "default": false,
     "type": "boolean"
   },
-  "rust-analyzer.trace.server": {
+  "wgsl-analyzer.trace.server": {
     "type": "string",
     "scope": "window",
     "enum": [
@@ -79,9 +79,9 @@
       "Full log"
     ],
     "default": "off",
-    "markdownDescription": "Trace requests to the rust-analyzer"
+    "markdownDescription": "Trace requests to the wgsl-analyzer"
   },
-  "rust-analyzer.updates.prompt": {
+  "wgsl-analyzer.updates.prompt": {
     "type": [
       "boolean",
       "string"
@@ -92,24 +92,24 @@
       "neverDownload"
     ],
     "default": true,
-    "markdownDescription": "Prompt the user before downloading rust-analyzer"
+    "markdownDescription": "Prompt the user before downloading wgsl-analyzer"
   },
-  "rust-analyzer.updates.checkOnStartup": {
+  "wgsl-analyzer.updates.checkOnStartup": {
     "type": "boolean",
     "default": true,
-    "markdownDescription": "Auto-check rust-analyzer updates on startup"
+    "markdownDescription": "Auto-check wgsl-analyzer updates on startup"
   },
-  "rust-analyzer.updates.channel": {
+  "wgsl-analyzer.updates.channel": {
     "type": "string",
     "default": "stable",
     "enum": [
       "stable",
       "nightly"
     ],
-    "markdownDescription": "Choose `\"nightly\"` updates to get the latest features and bug fixes every day. While `\"stable\"` releases occur weekly and don't contain cutting-edge features from VSCode proposed APIs",
+    "markdownDescription": "Choose `\"nightly\"` updates to get the latest features and bug fixes every day. While `\"stable\"` releases occur weekly and don't contain cutting-edge features from VS Code proposed APIs",
     "enumDescriptions": [
-      "`\"stable\"` updates are shipped weekly, they don't contain cutting-edge features from VSCode proposed APIs but have less bugs in general",
-      "`\"nightly\"` updates are shipped daily (extension updates automatically by downloading artifacts directly from GitHub), they contain cutting-edge features and latest bug fixes. These releases help us get your feedback very quickly and speed up rust-analyzer development **drastically**"
+      "`\"stable\"` updates are shipped weekly, they don't contain cutting-edge features from VS Code proposed APIs but have less bugs in general",
+      "`\"nightly\"` updates are shipped daily (extension updates automatically by downloading artifacts directly from GitHub), they contain cutting-edge features and latest bug fixes. These releases help us get your feedback very quickly and speed up wgsl-analyzer development **drastically**"
     ]
   }
 }

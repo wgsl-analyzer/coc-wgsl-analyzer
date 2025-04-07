@@ -1,14 +1,4 @@
-import {
-  commands,
-  type Disposable,
-  type ExtensionContext,
-  type LanguageClient,
-  services,
-  type TextDocument,
-  Uri,
-  window,
-  workspace,
-} from 'coc.nvim';
+import { commands, type Disposable, type ExtensionContext, type LanguageClient, services, type TextDocument, Uri, window, workspace } from 'coc.nvim';
 import { spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
@@ -18,12 +8,12 @@ import { Config } from './config';
 import { downloadServer, getLatestRelease } from './downloader';
 import * as ra from './lsp_ext';
 
-export type RustDocument = TextDocument & { languageId: 'rust' };
-export function isRustDocument(document: TextDocument): document is RustDocument {
-  return document.languageId === 'rust';
+export type WgslDocument = TextDocument & { languageId: 'wgsl' };
+export function isWgslDocument(document: TextDocument): document is WgslDocument {
+  return document.languageId === 'wgsl';
 }
 
-export function isCargoTomlDocument(document: TextDocument): document is RustDocument {
+export function isCargoTomlDocument(document: TextDocument): document is WgslDocument {
   const u = Uri.parse(document.uri);
   return u.scheme === 'file' && u.fsPath.endsWith('Cargo.toml');
 }
@@ -37,12 +27,12 @@ export class Ctx {
 
   constructor(private readonly extCtx: ExtensionContext) {
     const statusBar = window.createStatusBarItem(0);
-    statusBar.text = 'rust-analyzer';
+    statusBar.text = 'wgsl-analyzer';
     statusBar.show();
     this.extCtx.subscriptions.push(statusBar);
 
     window.onDidChangeActiveTextEditor((editor) => {
-      if (editor && editor.document.languageId === 'rust') {
+      if (editor && editor.document.languageId === 'wgsl') {
         statusBar.show();
       } else {
         statusBar.hide();
@@ -51,7 +41,7 @@ export class Ctx {
   }
 
   registerCommand(name: string, factory: (ctx: Ctx) => Cmd, internal = false) {
-    const fullName = `rust-analyzer.${name}`;
+    const fullName = `wgsl-analyzer.${name}`;
     const cmd = factory(this);
     const d = commands.registerCommand(fullName, cmd, null, internal);
     this.extCtx.subscriptions.push(d);
@@ -67,17 +57,14 @@ export class Ctx {
     this.extCtx.subscriptions.push(services.registLanguageClient(client));
     const watcher = workspace.createFileSystemWatcher('**/Cargo.toml');
     this.extCtx.subscriptions.push(watcher);
-    watcher.onDidChange(async () => await commands.executeCommand('rust-analyzer.reloadWorkspace'));
+    watcher.onDidChange(async () => await commands.executeCommand('wgsl-analyzer.reloadWorkspace'));
     await client.onReady();
 
     client.onNotification(ra.serverStatus, async (status) => {
       if (status.health !== 'ok' && status.message?.length) {
-        // https://github.com/fannheyward/coc-rust-analyzer/issues/763
-        if (status.message.startsWith('cargo check failed')) return;
+        if (status.message.startsWith('webby check failed')) return;
         window.showNotification({ content: status.message });
-        window.showWarningMessage(
-          `rust-analyzer failed to start, run ':CocCommand rust-analyzer.reloadWorkspace' to reload`,
-        );
+        window.showWarningMessage(`wgsl-analyzer failed to start, run ':CocCommand wgsl-analyzer.reloadWorkspace' to reload`);
       }
     });
 
@@ -96,9 +83,9 @@ export class Ctx {
 
   resolveBin(): string | undefined {
     // 1. from config, custom server path
-    // 2. bundled, coc-rust-analyzer can handle updating
+    // 2. bundled, coc-wgsl-analyzer can handle updating
     // 3. fallback to system installed server
-    const executableName = process.platform === 'win32' ? 'rust-analyzer.exe' : 'rust-analyzer';
+    const executableName = process.platform === 'win32' ? 'wgsl-analyzer.exe' : 'wgsl-analyzer';
     let bin = join(this.extCtx.storagePath, executableName);
     if (this.config.serverPath) {
       bin = which.sync(workspace.expand(this.config.serverPath), { nothrow: true }) || bin;
@@ -135,11 +122,10 @@ export class Ctx {
       await downloadServer(this.extCtx, latest);
     } catch (e) {
       console.error(e);
-      let msg = 'Install rust-analyzer failed, please try again';
+      let msg = 'Install wgsl-analyzer failed, please try again';
       // @ts-ignore
       if (e.code === 'EBUSY' || e.code === 'ETXTBSY' || e.code === 'EPERM') {
-        msg =
-          'Install rust-analyzer failed, other Vim instances might be using it, you should close them and try again';
+        msg = 'Install wgsl-analyzer failed, other Vim instances might be using it, you should close them and try again';
       }
       window.showInformationMessage(msg, 'error');
       return;
@@ -167,18 +153,15 @@ export class Ctx {
     const old = this.extCtx.globalState.get('release') || 'unknown release';
     if (old === latest.tag) {
       if (!auto) {
-        window.showInformationMessage('Your Rust Analyzer release is updated');
+        window.showInformationMessage('Your wgsl-analyzer release is updated');
       }
       return;
     }
 
-    const msg = `Rust Analyzer has a new release: ${latest.tag}, you're using ${old}. Would you like to download from GitHub`;
+    const msg = `wgsl-analyzer has a new release: ${latest.tag}, you're using ${old}. Would you like to download from GitHub`;
     let ret = 0;
     if (this.config.prompt === true) {
-      ret = await window.showQuickpick(
-        ['Yes, download the latest rust-analyzer', 'Check GitHub releases', 'Cancel'],
-        msg,
-      );
+      ret = await window.showQuickpick(['Yes, download the latest wgsl-analyzer', 'Check GitHub releases', 'Cancel'], msg);
     }
     if (ret === 0) {
       if (process.platform === 'win32') {
@@ -188,11 +171,10 @@ export class Ctx {
         await downloadServer(this.extCtx, latest);
       } catch (e) {
         console.error(e);
-        let msg = 'Upgrade rust-analyzer failed, please try again';
+        let msg = 'Upgrade wgsl-analyzer failed, please try again';
         // @ts-ignore
         if (e.code === 'EBUSY' || e.code === 'ETXTBSY' || e.code === 'EPERM') {
-          msg =
-            'Upgrade rust-analyzer failed, other Vim instances might be using it, you should close them and try again';
+          msg = 'Upgrade wgsl-analyzer failed, other Vim instances might be using it, you should close them and try again';
         }
         window.showInformationMessage(msg, 'error');
         return;
@@ -202,9 +184,7 @@ export class Ctx {
 
       this.extCtx.globalState.update('release', latest.tag);
     } else if (ret === 1) {
-      await commands
-        .executeCommand('vscode.open', 'https://github.com/rust-analyzer/rust-analyzer/releases')
-        .catch(() => {});
+      await commands.executeCommand('vscode.open', 'https://github.com/wgsl-analyzer/wgsl-analyzer/releases').catch(() => {});
     }
   }
 }

@@ -22,7 +22,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import readline from 'node:readline';
 import { CodeActionResolveRequest, TextDocumentEdit } from 'vscode-languageserver-protocol';
-import { type Cmd, type Ctx, isCargoTomlDocument, isRustDocument } from './ctx';
+import { type Cmd, type Ctx, isCargoTomlDocument, isWgslDocument } from './ctx';
 import * as ra from './lsp_ext';
 
 let terminal: Terminal | undefined;
@@ -56,19 +56,19 @@ function countLines(text: string): number {
 
 export function reload(ctx: Ctx): Cmd {
   return async () => {
-    window.showInformationMessage('Reloading rust-analyzer...');
+    window.showInformationMessage('Reloading wgsl-analyzer...');
 
     await ctx.client.stop();
     await ctx.client.start();
 
-    window.showInformationMessage('Reloaded rust-analyzer');
+    window.showInformationMessage('Reloaded wgsl-analyzer');
   };
 }
 
 export function analyzerStatus(ctx: Ctx): Cmd {
   return async () => {
     const { document } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
+    if (!isWgslDocument(document)) return;
     const params: ra.AnalyzerStatusParams = {
       textDocument: { uri: document.uri },
     };
@@ -87,7 +87,7 @@ export function memoryUsage(ctx: Ctx): Cmd {
 export function matchingBrace(ctx: Ctx): Cmd {
   return async () => {
     const { document, position } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
+    if (!isWgslDocument(document)) return;
 
     const params: ra.MatchingBraceParams = {
       textDocument: { uri: document.uri },
@@ -104,7 +104,7 @@ export function matchingBrace(ctx: Ctx): Cmd {
 export function joinLines(ctx: Ctx): Cmd {
   return async () => {
     const doc = await workspace.document;
-    if (!isRustDocument(doc.textDocument)) return;
+    if (!isWgslDocument(doc.textDocument)) return;
 
     let range: Range | null = null;
     const mode = (await workspace.nvim.call('visualmode')) as string;
@@ -125,7 +125,7 @@ export function joinLines(ctx: Ctx): Cmd {
 export function parentModule(ctx: Ctx): Cmd {
   return async () => {
     const { document, position } = await workspace.getCurrentState();
-    if (!(isRustDocument(document) || isCargoTomlDocument(document))) return;
+    if (!(isWgslDocument(document) || isCargoTomlDocument(document))) return;
 
     const param: TextDocumentPositionParams = {
       textDocument: { uri: document.uri },
@@ -190,7 +190,7 @@ export function serverVersion(ctx: Ctx): Cmd {
   return async () => {
     const bin = ctx.resolveBin();
     if (!bin) {
-      const msg = 'Rust Analyzer is not found';
+      const msg = 'wgsl-analyzer is not found';
       window.showErrorMessage(msg);
       return;
     }
@@ -202,7 +202,7 @@ export function serverVersion(ctx: Ctx): Cmd {
 
 async function fetchRunnable(ctx: Ctx): Promise<ra.Runnable[]> {
   const { document, position } = await workspace.getCurrentState();
-  if (!isRustDocument(document)) return [];
+  if (!isWgslDocument(document)) return [];
 
   window.showInformationMessage('Fetching runnable...');
 
@@ -265,7 +265,7 @@ export function debug(ctx: Ctx): Cmd {
 export function debugSingle(ctx: Ctx): Cmd {
   return async (runnable: ra.Runnable) => {
     const { document } = await workspace.getCurrentState();
-    if (!runnable || !isRustDocument(document)) return;
+    if (!runnable || !isWgslDocument(document)) return;
 
     let args: string[] = [];
     if (runnable.kind === 'cargo') {
@@ -449,7 +449,7 @@ export function debugSingle(ctx: Ctx): Cmd {
 export function runSingle(ctx: Ctx): Cmd {
   return async (runnable: ra.Runnable) => {
     const { document } = await workspace.getCurrentState();
-    if (!runnable || !isRustDocument(document)) return;
+    if (!runnable || !isWgslDocument(document)) return;
 
     let args: string[] = [];
     if (runnable.kind === 'cargo') {
@@ -483,7 +483,7 @@ export function runSingle(ctx: Ctx): Cmd {
 export function viewSyntaxTree(ctx: Ctx): Cmd {
   return async () => {
     const doc = await workspace.document;
-    if (!isRustDocument(doc.textDocument)) return;
+    if (!isWgslDocument(doc.textDocument)) return;
 
     const mode = await workspace.nvim.call('visualmode');
     let range: Range | null = null;
@@ -508,7 +508,7 @@ export function viewSyntaxTree(ctx: Ctx): Cmd {
 export function expandMacro(ctx: Ctx): Cmd {
   return async () => {
     const { document, position } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
+    if (!isWgslDocument(document)) return;
 
     const param: TextDocumentPositionParams = {
       textDocument: { uri: document.uri },
@@ -523,7 +523,7 @@ export function expandMacro(ctx: Ctx): Cmd {
     nvim.pauseNotification();
     nvim.command('edit +setl\\ buftype=nofile [Macro]', true);
     nvim.command('setl nobuflisted bufhidden=wipe', true);
-    nvim.command('setl filetype=rust', true);
+    nvim.command('setl filetype=wgsl', true);
     nvim.call('append', [0, lines], true);
     nvim.command('exe 1', true);
     await nvim.resumeNotification(true);
@@ -533,16 +533,16 @@ export function expandMacro(ctx: Ctx): Cmd {
 export function explainError(ctx: Ctx): Cmd {
   return async () => {
     const { document, position } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
+    if (!isWgslDocument(document)) return;
 
     const diag = ctx.client.diagnostics?.get(document.uri)?.find((diagnostic) => isInRange(diagnostic.range, position));
     if (diag?.code) {
-      const explanation = spawnSync('rustc', ['--explain', `${diag.code}`], { encoding: 'utf-8' }).stdout.toString();
+      const explanation = spawnSync('wgpu', ['--explain', `${diag.code}`], { encoding: 'utf-8' }).stdout.toString();
 
       const docs: Documentation[] = [];
       let isCode = false;
       for (const part of explanation.split('```\n')) {
-        docs.push({ content: part, filetype: isCode ? 'rust' : 'markdown' });
+        docs.push({ content: part, filetype: isCode ? 'wgsl' : 'markdown' });
         isCode = !isCode;
       }
 
@@ -628,7 +628,7 @@ export function applySnippetWorkspaceEditCommand(): Cmd {
 export function runFlycheck(ctx: Ctx): Cmd {
   return async () => {
     const { document } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
+    if (!isWgslDocument(document)) return;
 
     ctx.client.sendNotification(ra.runFlycheck, { textDocument: { uri: document.uri } });
   };
@@ -663,7 +663,7 @@ export function resolveCodeAction(ctx: Ctx): Cmd {
 export function openDocs(ctx: Ctx): Cmd {
   return async () => {
     const { document, position } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
+    if (!isWgslDocument(document)) return;
 
     const param: TextDocumentPositionParams = {
       textDocument: { uri: document.uri },
@@ -688,7 +688,7 @@ export function openDocs(ctx: Ctx): Cmd {
 export function openCargoToml(ctx: Ctx): Cmd {
   return async () => {
     const { document } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
+    if (!isWgslDocument(document)) return;
 
     const location = await ctx.client.sendRequest(ra.openCargoToml, {
       textDocument: { uri: document.uri },
@@ -702,7 +702,7 @@ export function openCargoToml(ctx: Ctx): Cmd {
 function viewXir(ctx: Ctx, xir: 'HIR' | 'MIR'): Cmd {
   return async () => {
     const { document, position } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
+    if (!isWgslDocument(document)) return;
 
     const param: TextDocumentPositionParams = {
       textDocument: { uri: document.uri },
@@ -732,7 +732,7 @@ export function viewMir(ctx: Ctx): Cmd {
 export function interpretFunction(ctx: Ctx): Cmd {
   return async () => {
     const { document, position } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
+    if (!isWgslDocument(document)) return;
 
     const param: TextDocumentPositionParams = {
       textDocument: { uri: document.uri },
@@ -753,7 +753,7 @@ export function interpretFunction(ctx: Ctx): Cmd {
 export function viewFileText(ctx: Ctx): Cmd {
   return async () => {
     const { document } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
+    if (!isWgslDocument(document)) return;
 
     const ret = await ctx.client.sendRequest(ra.viewFileText, { uri: document.uri });
     if (!ret) return;
@@ -792,15 +792,13 @@ export function echoRunCommandLine(ctx: Ctx) {
 export function peekTests(ctx: Ctx): Cmd {
   return async () => {
     const { document, position } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
+    if (!isWgslDocument(document)) return;
 
     const tests = await ctx.client.sendRequest(ra.relatedTests, {
       textDocument: { uri: document.uri },
       position,
     });
-    const locations: Location[] = tests.map((it) =>
-      Location.create(it.runnable.location!.targetUri, it.runnable.location!.targetSelectionRange),
-    );
+    const locations: Location[] = tests.map((it) => Location.create(it.runnable.location!.targetUri, it.runnable.location!.targetSelectionRange));
     await commands.executeCommand('editor.action.showReferences', Uri.parse(document.uri), position, locations);
   };
 }
@@ -808,7 +806,7 @@ export function peekTests(ctx: Ctx): Cmd {
 function moveItem(ctx: Ctx, direction: ra.Direction): Cmd {
   return async () => {
     const { document, position } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
+    if (!isWgslDocument(document)) return;
 
     let range: Range | null = null;
     const mode = (await workspace.nvim.call('visualmode')) as string;
@@ -918,7 +916,7 @@ export function viewFullCrateGraph(ctx: Ctx): Cmd {
 export function shuffleCrateGraph(ctx: Ctx): Cmd {
   return async () => {
     const { document } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
+    if (!isWgslDocument(document)) return;
 
     await ctx.client.sendRequest(ra.shuffleCrateGraph);
   };
@@ -927,7 +925,7 @@ export function shuffleCrateGraph(ctx: Ctx): Cmd {
 export function viewItemTree(ctx: Ctx): Cmd {
   return async () => {
     const { document } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
+    if (!isWgslDocument(document)) return;
 
     const param: ra.ViewItemTreeParams = {
       textDocument: { uri: document.uri },
@@ -947,7 +945,7 @@ export function viewItemTree(ctx: Ctx): Cmd {
 export function rebuildProcMacros(ctx: Ctx): Cmd {
   return async () => {
     const { document } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
+    if (!isWgslDocument(document)) return;
 
     await ctx.client.sendRequest(ra.rebuildProcMacros);
   };

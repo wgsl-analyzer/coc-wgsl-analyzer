@@ -8,7 +8,7 @@ esbuild.js
 esbuild.mjs
 webpack.config.js
 biome.json
-coc-rust-analyzer-configurations.json
+coc-wgsl-analyzer-configurations.json
 generate-config-schema.js
 yarn.lock
 yarn-error.log
