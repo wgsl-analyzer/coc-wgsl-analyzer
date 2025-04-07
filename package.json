@@ -288,7 +288,7 @@
           ]
         },
         "wgsl-analyzer.webby.targetDir": {
-          "markdownDescription": "Optional path to a wgsl-analyzer specific target directory.\nThis prevents wgsl-analyzer's `webby check` and initial build-script and proc-macro\nbuilding from locking the `webby.lock` at the expense of duplicating build artifacts.\n\nSet to `true` to use a subdirectory of the existing target directory or\nset to a path relative to the workspace to use that path.",
+          "markdownDescription": "Optional path to a wgsl-analyzer specific target directory.\nThis prevents wgsl-analyzer's `webby check` from locking the `webby.lock` at the expense of duplicating build artifacts.\n\nSet to `true` to use a subdirectory of the existing target directory or\nset to a path relative to the workspace to use that path.",
           "default": null,
           "anyOf": [
             {
@@ -950,7 +950,7 @@
           "type": "boolean"
         },
         "wgsl-analyzer.linkedProjects": {
-          "markdownDescription": "Disable project auto-discovery in favor of explicitly specified set\nof projects.\n\nElements must be paths pointing to `Webby.toml`,\n`wgsl-project.json`, `.rs` files (which will be treated as standalone files) or JSON\nobjects in `wgsl-project.json` format.",
+          "markdownDescription": "Disable project auto-discovery in favor of explicitly specified set\nof projects.\n\nElements must be paths pointing to `webby.toml`,\n`wgsl-project.json`, `.rs` files (which will be treated as standalone files) or JSON\nobjects in `wgsl-project.json` format.",
           "default": [],
           "type": "array",
           "items": {
@@ -976,7 +976,7 @@
           "type": "object"
         },
         "wgsl-analyzer.notifications.webbyTomlNotFound": {
-          "markdownDescription": "Whether to show `can't find Webby.toml` error message.",
+          "markdownDescription": "Whether to show `can't find webby.toml` error message.",
           "default": true,
           "type": "boolean"
         },

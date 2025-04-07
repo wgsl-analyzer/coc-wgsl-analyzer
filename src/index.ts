@@ -61,24 +61,22 @@ export async function activate(context: ExtensionContext): Promise<void> {
   ctx.registerCommand('moveItemUp', cmds.moveItemUp);
   ctx.registerCommand('testCurrent', cmds.testCurrent);
   ctx.registerCommand('memoryUsage', cmds.memoryUsage);
-  ctx.registerCommand('expandMacro', cmds.expandMacro);
   ctx.registerCommand('moveItemDown', cmds.moveItemDown);
   ctx.registerCommand('viewFileText', cmds.viewFileText);
   ctx.registerCommand('viewItemTree', cmds.viewItemTree);
   ctx.registerCommand('explainError', cmds.explainError);
   ctx.registerCommand('parentModule', cmds.parentModule);
   ctx.registerCommand('matchingBrace', cmds.matchingBrace);
-  ctx.registerCommand('openCargoToml', cmds.openCargoToml);
+  ctx.registerCommand('openWebbyToml', cmds.openWebbyToml);
   ctx.registerCommand('serverVersion', cmds.serverVersion);
   ctx.registerCommand('runFlycheck', cmds.runFlycheck);
   ctx.registerCommand('cancelFlycheck', cmds.cancelFlycheck);
   ctx.registerCommand('clearFlycheck', cmds.clearFlycheck);
   ctx.registerCommand('analyzerStatus', cmds.analyzerStatus);
-  ctx.registerCommand('viewCrateGraph', cmds.viewCrateGraph);
+  ctx.registerCommand('viewPackageGraph', cmds.viewPackageGraph);
   ctx.registerCommand('interpretFunction', cmds.interpretFunction);
-  ctx.registerCommand('rebuildProcMacros', cmds.rebuildProcMacros);
-  ctx.registerCommand('shuffleCrateGraph', cmds.shuffleCrateGraph);
-  ctx.registerCommand('viewFullCrateGraph', cmds.viewFullCrateGraph);
+  ctx.registerCommand('shufflePackageGraph', cmds.shufflePackageGraph);
+  ctx.registerCommand('viewFullPackageGraph', cmds.viewFullPackageGraph);
   ctx.registerCommand('reloadWorkspace', cmds.reloadWorkspace);
   ctx.registerCommand('echoRunCommandLine', cmds.echoRunCommandLine);
 

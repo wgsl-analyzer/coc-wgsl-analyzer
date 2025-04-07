@@ -17,7 +17,7 @@ import { join } from 'node:path';
 import { CodeAction, CodeActionRequest, type CodeActionParams } from 'vscode-languageserver-protocol';
 import type { Config } from './config';
 import { isWgslDocument } from './ctx';
-import * as ra from './lsp_ext';
+import * as wa from './lsp_ext';
 
 class ExperimentalFeatures implements StaticFeature {
   fillClientCapabilities(capabilities: any): void {
@@ -83,11 +83,11 @@ export function createClient(bin: string, config: Config): LanguageClient {
           positionOrRange = await window.getSelectedRange(mode);
         }
         if (!positionOrRange) positionOrRange = position;
-        const param: ra.HoverParams = {
+        const param: wa.HoverParams = {
           position: positionOrRange || position,
           textDocument: { uri: document.uri },
         };
-        return await client.sendRequest(ra.hover, param, token);
+        return await client.sendRequest(wa.hover, param, token);
       },
       async provideCodeActions(document, range, context, token) {
         const params: CodeActionParams = {

@@ -6,16 +6,16 @@ import which from 'which';
 import { createClient } from './client';
 import { Config } from './config';
 import { downloadServer, getLatestRelease } from './downloader';
-import * as ra from './lsp_ext';
+import * as wa from './lsp_ext';
 
 export type WgslDocument = TextDocument & { languageId: 'wgsl' };
 export function isWgslDocument(document: TextDocument): document is WgslDocument {
   return document.languageId === 'wgsl';
 }
 
-export function isCargoTomlDocument(document: TextDocument): document is WgslDocument {
+export function isWebbyTomlDocument(document: TextDocument): document is WgslDocument {
   const u = Uri.parse(document.uri);
-  return u.scheme === 'file' && u.fsPath.endsWith('Cargo.toml');
+  return u.scheme === 'file' && u.fsPath.endsWith('webby.toml');
 }
 
 export type Cmd = (...args: any[]) => unknown;
@@ -55,12 +55,12 @@ export class Ctx {
 
     const client = createClient(bin, this.config);
     this.extCtx.subscriptions.push(services.registLanguageClient(client));
-    const watcher = workspace.createFileSystemWatcher('**/Cargo.toml');
+    const watcher = workspace.createFileSystemWatcher('**/webby.toml');
     this.extCtx.subscriptions.push(watcher);
     watcher.onDidChange(async () => await commands.executeCommand('wgsl-analyzer.reloadWorkspace'));
     await client.onReady();
 
-    client.onNotification(ra.serverStatus, async (status) => {
+    client.onNotification(wa.serverStatus, async (status) => {
       if (status.health !== 'ok' && status.message?.length) {
         if (status.message.startsWith('webby check failed')) return;
         window.showNotification({ content: status.message });

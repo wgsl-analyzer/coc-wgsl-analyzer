@@ -10,7 +10,7 @@
 
 ## Configurations
 
-This extension is configured using a jsonc file. You can open this configuration file using the command `:CocConfig`, and it is typically located at `$HOME/.config/nvim/coc-settings.json`. You can get the configurations list from the [package.json](https://github.com/fannheyward/coc-wgsl-analyzer/blob/master/package.json#L72) file of this extension.
+This extension is configured using a jsonc file. You can open this configuration file using the command `:CocConfig`, and it is typically located at `$HOME/.config/nvim/coc-settings.json`. You can get the configurations list from the [package.json](https://github.com/wgsl-analyzer/coc-wgsl-analyzer/blob/main/package.json#L72) file of this extension.
 
 ## Commands
 

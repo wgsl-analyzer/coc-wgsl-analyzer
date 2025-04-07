@@ -3,7 +3,6 @@ name: issue
 about: issue
 title: ''
 labels: ''
-assignees: fannheyward
 
 ---
 
