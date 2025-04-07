@@ -734,7 +734,9 @@ export function peekTests(ctx: Ctx): Cmd {
       textDocument: { uri: document.uri },
       position,
     });
-    const locations: Location[] = tests.map((it) => Location.create(it.runnable.location!.targetUri, it.runnable.location!.targetSelectionRange));
+    const locations: Location[] = tests.map((it) =>
+      Location.create(it.runnable.location!.targetUri, it.runnable.location!.targetSelectionRange),
+    );
     await commands.executeCommand('editor.action.showReferences', Uri.parse(document.uri), position, locations);
   };
 }

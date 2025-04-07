@@ -26,7 +26,13 @@ class ExperimentalFeatures implements StaticFeature {
     caps.serverStatusNotification = true;
     caps.localDocs = true;
     caps.commands = {
-      commands: ['wgsl-analyzer.runSingle', 'wgsl-analyzer.debugSingle', 'wgsl-analyzer.showReferences', 'wgsl-analyzer.gotoLocation', 'editor.action.triggerParameterHints'],
+      commands: [
+        'wgsl-analyzer.runSingle',
+        'wgsl-analyzer.debugSingle',
+        'wgsl-analyzer.showReferences',
+        'wgsl-analyzer.gotoLocation',
+        'editor.action.triggerParameterHints',
+      ],
     };
     capabilities.experimental = caps;
   }

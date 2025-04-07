@@ -1,9 +1,7 @@
 {
   "$schema": "https://biomejs.dev/schemas/1.9.2/schema.json",
   "files": {
-    "ignore": [
-      "src/lsp_ext.ts"
-    ]
+    "ignore": ["src/lsp_ext.ts", "lib"]
   },
   "formatter": {
     "enabled": true,

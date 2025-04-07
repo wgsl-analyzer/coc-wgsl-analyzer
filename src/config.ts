@@ -8,7 +8,9 @@ export interface Env {
 
 export class Config {
   private readonly rootSection = 'wgsl-analyzer';
-  private readonly requiresReloadOpts = ['server', 'webby', 'files', 'updates', 'lens', 'inlayHints'].map((opt) => `${this.rootSection}.${opt}`);
+  private readonly requiresReloadOpts = ['server', 'webby', 'files', 'updates', 'lens', 'inlayHints'].map(
+    (opt) => `${this.rootSection}.${opt}`,
+  );
   private cfg: WorkspaceConfiguration;
 
   constructor() {
