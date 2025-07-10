@@ -24,9 +24,3 @@ This section is optional. If this PR does not include a visual change or does no
 - If this PR includes a visual change, consider adding a screenshot, GIF, or video
   - If you want, you could even include a before/after comparison!
 - If the Migration Guide adequately covers the changes, you can delete this section
-
-While a showcase should aim to be brief and digestible, you can use a toggleable section to save space on longer showcases:
-
-```rust
-println!("My super cool code.");
-```
