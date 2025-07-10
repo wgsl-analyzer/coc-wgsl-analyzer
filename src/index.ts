@@ -17,10 +17,10 @@ export async function activate(context: ExtensionContext): Promise<void> {
 
   const bin = ctx.resolveBin();
   if (!bin) {
-    let msg = 'wgsl-analyzer is not found, download from GitHub release?';
+    let message = 'wgsl-analyzer is not found, download from GitHub release?';
     let ret = ctx.config.prompt === 'neverDownload' ? -1 : 0;
     if (ctx.config.prompt === true) {
-      ret = await window.showQuickpick(['Yes', 'Cancel'], msg);
+      ret = await window.showQuickpick(['Yes', 'Cancel'], message);
     }
     if (ret === 0) {
       try {
@@ -29,8 +29,8 @@ export async function activate(context: ExtensionContext): Promise<void> {
         await downloadServer(context, latest);
       } catch (e) {
         console.error(e);
-        msg = 'Download wgsl-analyzer failed, you can get it from https://github.com/wgsl-analyzer/wgsl-analyzer';
-        window.showErrorMessage(msg);
+        message = 'Download wgsl-analyzer failed, you can get it from https://github.com/wgsl-analyzer/wgsl-analyzer';
+        window.showErrorMessage(message);
         return;
       }
     } else {

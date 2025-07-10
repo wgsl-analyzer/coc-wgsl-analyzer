@@ -22,7 +22,11 @@
   "wgsl-analyzer.debug.runtime": {
     "type": "string",
     "default": "termdebug",
-    "enum": ["termdebug", "vimspector", "nvim-dap"],
+    "enum": [
+      "termdebug",
+      "vimspector",
+      "nvim-dap"
+    ],
     "markdownDescription": "Choose which debug runtime to use",
     "enumDescriptions": [
       "`\"termdebug\"` use vim/neovim builtin debugger - gdb",
@@ -38,15 +42,21 @@
   "wgsl-analyzer.debug.nvimdap.configuration.template": {
     "type": "string",
     "default": "",
-    "markdownDescription": "Configuration template used to invoked dap.run([conf](https://github.com/mfussenegger/nvim-dap/blob/0e6b7c47dd70e80793ed39271b2aa712d9366dbc/doc/dap.txt#L656C2-L656C2)). The template will be instantiate like thie: `$exe` will be replaced with executable path, `$args` will be replaced with arguments."
+    "markdownDescription": "Configuration template used to invoked dap.run([conf](https://github.com/mfussenegger/nvim-dap/blob/0e6b7c47dd70e80793ed39271b2aa712d9366dbc/doc/dap.txt#L656C2-L656C2)). The template will be instantiated like this: `$exe` will be replaced with executable path, `$args` will be replaced with arguments."
   },
   "wgsl-analyzer.server.path": {
-    "type": ["null", "string"],
+    "type": [
+      "null",
+      "string"
+    ],
     "default": null,
     "markdownDescription": "Path to wgsl-analyzer executable (points to bundled binary by default). If this is set, then \"wgsl-analyzer.updates.channel\" setting is not used"
   },
   "wgsl-analyzer.server.extraEnv": {
-    "type": ["null", "object"],
+    "type": [
+      "null",
+      "object"
+    ],
     "default": null,
     "markdownDescription": "Extra environment variables that will be passed to the wgsl-analyzer executable. Useful for passing e.g. `RA_LOG` for debugging."
   },
@@ -58,14 +68,29 @@
   "wgsl-analyzer.trace.server": {
     "type": "string",
     "scope": "window",
-    "enum": ["off", "messages", "verbose"],
-    "enumDescriptions": ["No traces", "Error only", "Full log"],
+    "enum": [
+      "off",
+      "messages",
+      "verbose"
+    ],
+    "enumDescriptions": [
+      "No traces",
+      "Error only",
+      "Full log"
+    ],
     "default": "off",
     "markdownDescription": "Trace requests to the wgsl-analyzer"
   },
   "wgsl-analyzer.updates.prompt": {
-    "type": ["boolean", "string"],
-    "enum": [true, false, "neverDownload"],
+    "type": [
+      "boolean",
+      "string"
+    ],
+    "enum": [
+      true,
+      false,
+      "neverDownload"
+    ],
     "default": true,
     "markdownDescription": "Prompt the user before downloading wgsl-analyzer"
   },
@@ -77,7 +102,10 @@
   "wgsl-analyzer.updates.channel": {
     "type": "string",
     "default": "stable",
-    "enum": ["stable", "nightly"],
+    "enum": [
+      "stable",
+      "nightly"
+    ],
     "markdownDescription": "Choose `\"nightly\"` updates to get the latest features and bug fixes every day. While `\"stable\"` releases occur weekly and don't contain cutting-edge features from VS Code proposed APIs",
     "enumDescriptions": [
       "`\"stable\"` updates are shipped weekly, they don't contain cutting-edge features from VS Code proposed APIs but have less bugs in general",

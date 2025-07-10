@@ -14,9 +14,9 @@ import type { UpdatesChannel } from './config';
 const pipeline = util.promisify(stream.pipeline);
 const rejectUnauthorized = workspace.getConfiguration('http').get('proxyStrictSSL', true);
 const proxy = process.env.https_proxy || process.env.HTTPS_PROXY;
-const agent = proxy ? new HttpsProxyAgent(proxy, { rejectUnauthorized }) : null;
+const agent = proxy ? new HttpsProxyAgent(proxy, { rejectUnauthorized }) : undefined;
 
-async function patchelf(dest: PathLike): Promise<void> {
+async function patchelf(destination: PathLike): Promise<void> {
   const expression = `
 {src, pkgs ? import <nixpkgs> {}}:
     pkgs.stdenv.mkDerivation {
@@ -30,12 +30,12 @@ async function patchelf(dest: PathLike): Promise<void> {
         '';
     }
 `;
-  const origFile = `${dest}-orig`;
-  await fs.rename(dest, origFile);
+  const origFile = `${destination}-orig`;
+  await fs.rename(destination, origFile);
 
   await new Promise((resolve, reject) => {
-    const handle = exec(`nix-build -E - --arg src '${origFile}' -o ${dest}`, (err, stdout, stderr) => {
-      if (err != null) {
+    const handle = exec(`nix-build -E - --arg src '${origFile}' -o ${destination}`, (error, stdout, stderr) => {
+      if (error != null) {
         reject(Error(stderr));
       } else {
         resolve(stdout);
@@ -69,8 +69,8 @@ export interface ReleaseTag {
 function isMusl(): boolean {
   // We can detect Alpine by checking `/etc/os-release` but not Void Linux musl.
   // Instead, we run `ldd` since it advertises the libc which it belongs to.
-  const res = spawnSync('ldd', ['--version']);
-  return res.stderr != null && res.stderr.indexOf('musl libc') >= 0;
+  const result = spawnSync('ldd', ['--version']);
+  return result.stderr != null && result.stderr.indexOf('musl libc') >= 0;
 }
 
 function getPlatform(): string | undefined {
@@ -98,14 +98,13 @@ export async function getLatestRelease(updatesChannel: UpdatesChannel): Promise<
   if (updatesChannel === 'nightly') {
     releaseURL = 'https://api.github.com/repos/wgsl-analyzer/wgsl-analyzer/releases/tags/nightly';
   }
-  // @ts-ignore
   const response = await fetch(releaseURL, { agent });
   if (!response.ok) {
     console.error(await response.text());
     return;
   }
 
-  const release: GithubRelease = await response.json();
+  const release: GithubRelease = await response.json() as GithubRelease;
   const platform = getPlatform();
   if (!platform) {
     console.error(`Unfortunately we don't ship binaries for your platform yet.`);
@@ -134,19 +133,19 @@ export async function downloadServer(context: ExtensionContext, release: Release
   statusItem.text = `Downloading wgsl-analyzer ${release.tag}`;
   statusItem.show();
 
-  // @ts-ignore
-  const resp = await fetch(release.url, { agent });
-  // const resp = await fetch('http://devd.io/wgsl-analyzer');
-  if (!resp.ok) {
+  const response = await fetch(release.url, { agent });
+  if (!response.ok) {
     statusItem.hide();
     throw new Error('Download failed');
   }
-
-  let cur = 0;
-  const len = Number(resp.headers.get('content-length'));
-  resp.body.on('data', (chunk: Buffer) => {
-    cur += chunk.length;
-    const p = ((cur / len) * 100).toFixed(2);
+  if (response.body === null) {
+    throw new Error("response.body was null");
+  }
+  let current = 0;
+  const length = Number(response.headers.get('content-length'));
+  response.body.on('data', (chunk: Buffer) => {
+    current += chunk.length;
+    const p = ((current / length) * 100).toFixed(2);
     statusItem.text = `${p}% Downloading wgsl-analyzer ${release.tag}`;
     console.info(`${p}% Downloading wgsl-analyzer ${release.tag}`);
   });
@@ -156,26 +155,26 @@ export async function downloadServer(context: ExtensionContext, release: Release
   const tempFile = path.join(context.storagePath, `${release.name}${randomHex}`);
 
   if (process.platform === 'win32') {
-    await fs.writeFile(tempFile, await resp.buffer());
+    await fs.writeFile(tempFile, await response.buffer());
 
     new AdmZip(tempFile).extractAllTo(context.storagePath, true, true);
-    await fs.unlink(tempFile).catch((err) => {
-      console.error(err);
+    await fs.unlink(tempFile).catch((error) => {
+      console.error(error);
     });
     statusItem.hide();
     return;
   }
 
-  const destFileStream = createWriteStream(tempFile, { mode: 0o755 });
-  await pipeline(resp.body.pipe(zlib.createGunzip()), destFileStream);
+  const destinationFileStream = createWriteStream(tempFile, { mode: 0o755 });
+  await pipeline(response.body.pipe(zlib.createGunzip()), destinationFileStream);
   await new Promise<void>((resolve) => {
-    destFileStream.on('close', resolve);
-    destFileStream.destroy();
+    destinationFileStream.on('close', resolve);
+    destinationFileStream.destroy();
     setTimeout(resolve, 1000);
   });
 
-  await fs.unlink(_path).catch((err) => {
-    if (err.code !== 'ENOENT') throw err;
+  await fs.unlink(_path).catch((error) => {
+    if (error.code !== 'ENOENT') throw error;
   });
   await fs.rename(tempFile, _path);
 

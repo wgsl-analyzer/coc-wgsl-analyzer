@@ -5,11 +5,13 @@
     "module": "commonjs",
     "declaration": false,
     "sourceMap": true,
-    "outDir": "lib",
+    "outDir": "lib", // spellchecker:disable-line
     "strict": true,
     "moduleResolution": "node",
     "noImplicitAny": false,
     "esModuleInterop": true
   },
-  "include": ["src"]
+  "include": [
+    "src" // spellchecker:disable-line
+  ]
 }

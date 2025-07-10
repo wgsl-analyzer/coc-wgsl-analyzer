@@ -8,7 +8,7 @@ import {
   Range,
   type Terminal,
   type TerminalOptions,
-  type TextDocumentPositionParams,
+  type TextDocumentPositionParameters,
   TextEdit,
   Uri,
   window,
@@ -60,18 +60,18 @@ export function analyzerStatus(ctx: Ctx): Cmd {
   return async () => {
     const { document } = await workspace.getCurrentState();
     if (!isWgslDocument(document)) return;
-    const params: wa.AnalyzerStatusParams = {
+    const parameters: wa.AnalyzerStatusParameters = {
       textDocument: { uri: document.uri },
     };
-    const ret = await ctx.client.sendRequest(wa.analyzerStatus, params);
+    const ret = await ctx.client.sendRequest(wa.analyzerStatus, parameters);
     window.echoLines(ret.split('\n'));
   };
 }
 
 export function memoryUsage(ctx: Ctx): Cmd {
   return async () => {
-    const ret = await ctx.client.sendRequest(wa.memoryUsage);
-    window.echoLines(ret.split('\n'));
+    const result = await ctx.client.sendRequest(wa.memoryUsage);
+    window.echoLines(result.split('\n'));
   };
 }
 
@@ -80,12 +80,12 @@ export function matchingBrace(ctx: Ctx): Cmd {
     const { document, position } = await workspace.getCurrentState();
     if (!isWgslDocument(document)) return;
 
-    const params: wa.MatchingBraceParams = {
+    const parameters: wa.MatchingBraceParameters = {
       textDocument: { uri: document.uri },
       positions: [position],
     };
 
-    const response = await ctx.client.sendRequest(wa.matchingBrace, params);
+    const response = await ctx.client.sendRequest(wa.matchingBrace, parameters);
     if (response.length > 0) {
       workspace.jumpTo(document.uri, response[0]);
     }
@@ -104,11 +104,11 @@ export function joinLines(ctx: Ctx): Cmd {
       const state = await workspace.getCurrentState();
       range = Range.create(state.position, state.position);
     }
-    const param: wa.JoinLinesParams = {
+    const parameters: wa.JoinLinesParameters = {
       textDocument: { uri: doc.uri },
       ranges: [range],
     };
-    const items = await ctx.client.sendRequest(wa.joinLines, param);
+    const items = await ctx.client.sendRequest(wa.joinLines, parameters);
     await doc.applyEdits(items);
   };
 }
@@ -118,12 +118,12 @@ export function parentModule(ctx: Ctx): Cmd {
     const { document, position } = await workspace.getCurrentState();
     if (!(isWgslDocument(document) || isWebbyTomlDocument(document))) return;
 
-    const param: TextDocumentPositionParams = {
+    const parameters: TextDocumentPositionParameters = {
       textDocument: { uri: document.uri },
       position,
     };
 
-    const locations = await ctx.client.sendRequest(wa.parentModule, param);
+    const locations = await ctx.client.sendRequest(wa.parentModule, parameters);
     if (!locations) return;
 
     if (locations.length === 1) {
@@ -162,7 +162,7 @@ export function ssr(ctx: Ctx): Cmd {
     }
 
     const { document, position } = await workspace.getCurrentState();
-    const param: wa.SsrParams = {
+    const parameters: wa.SsrParameters = {
       query: input,
       parseOnly: false,
       textDocument: { uri: document.uri },
@@ -171,7 +171,7 @@ export function ssr(ctx: Ctx): Cmd {
     };
 
     window.withProgress({ title: 'Structured search replacing...', cancellable: false }, async () => {
-      const edit = await ctx.client.sendRequest(wa.ssr, param);
+      const edit = await ctx.client.sendRequest(wa.ssr, parameters);
       await workspace.applyEdit(edit);
     });
   };
@@ -181,8 +181,8 @@ export function serverVersion(ctx: Ctx): Cmd {
   return async () => {
     const bin = ctx.resolveBin();
     if (!bin) {
-      const msg = 'wgsl-analyzer is not found';
-      window.showErrorMessage(msg);
+      const message = 'wgsl-analyzer is not found';
+      window.showErrorMessage(message);
       return;
     }
 
@@ -197,12 +197,12 @@ async function fetchRunnable(ctx: Ctx): Promise<wa.Runnable[]> {
 
   window.showInformationMessage('Fetching runnable...');
 
-  const params: wa.RunnablesParams = {
+  const parameters: wa.RunnablesParameters = {
     textDocument: { uri: document.uri },
     position,
   };
 
-  return await ctx.client.sendRequest(wa.runnables, params);
+  return await ctx.client.sendRequest(wa.runnables, parameters);
 }
 
 async function pickRunnable(ctx: Ctx): Promise<wa.Runnable | undefined> {
@@ -214,10 +214,10 @@ async function pickRunnable(ctx: Ctx): Promise<wa.Runnable | undefined> {
     items.push(new RunnableQuickPick(r));
   }
 
-  const idx = await window.showQuickpick(items.map((o) => o.label));
-  if (idx === -1) return;
+  const index = await window.showQuickpick(items.map((o) => o.label));
+  if (index === -1) return;
 
-  return items[idx].runnable;
+  return items[index].runnable;
 }
 
 export function run(ctx: Ctx): Cmd {
@@ -455,7 +455,7 @@ export function runSingle(ctx: Ctx): Cmd {
     }
 
     const cmd = `${runnable.kind} ${args.join(' ')}`;
-    const opt: TerminalOptions = {
+    const option: TerminalOptions = {
       name: runnable.label,
       cwd: runnable.args.cwd,
     };
@@ -463,7 +463,7 @@ export function runSingle(ctx: Ctx): Cmd {
       terminal.dispose();
       terminal = undefined;
     }
-    terminal = await window.createTerminal(opt);
+    terminal = await window.createTerminal(option);
     terminal.sendText(cmd);
     if (ctx.config.terminal.startinsert) {
       await workspace.nvim.command('startinsert');
@@ -479,12 +479,12 @@ export function viewSyntaxTree(ctx: Ctx): Cmd {
     const mode = await workspace.nvim.call('visualmode');
     let range: Range | null = null;
     if (mode) range = await window.getSelectedRange(mode);
-    const param: wa.SyntaxTreeParams = {
+    const parameters: wa.SyntaxTreeParameters = {
       textDocument: { uri: doc.uri },
       range,
     };
 
-    const ret = await ctx.client.sendRequest(wa.viewSyntaxTree, param);
+    const ret = await ctx.client.sendRequest(wa.viewSyntaxTree, parameter);
     if (!ret) return;
     const nvim = workspace.nvim;
     nvim.pauseNotification();
@@ -565,8 +565,8 @@ export async function applySnippetWorkspaceEdit(edit: WorkspaceEdit) {
         const lastNewline = prefix.lastIndexOf('\n');
 
         const line = range.start.line + countLines(prefix);
-        const col = lastNewline === -1 ? range.start.character + index0 : prefix.length - lastNewline - 1;
-        position = Position.create(line, col);
+        const column = lastNewline === -1 ? range.start.character + index0 : prefix.length - lastNewline - 1;
+        position = Position.create(line, column);
       }
 
       newEdits.push(TextEdit.replace(range, parsed.replaceAll('$0', '')));
@@ -614,9 +614,9 @@ export function clearFlycheck(ctx: Ctx): Cmd {
 }
 
 export function resolveCodeAction(ctx: Ctx): Cmd {
-  return async (params: CodeAction) => {
-    params.command = undefined;
-    const item = (await ctx.client.sendRequest(CodeActionResolveRequest.method, params)) as CodeAction;
+  return async (parameters: CodeAction) => {
+    parameters.command = undefined;
+    const item = (await ctx.client.sendRequest(CodeActionResolveRequest.method, parameters)) as CodeAction;
     if (!item?.edit) return;
 
     const wsEditWithoutTextEdits: WorkspaceEdit = {
@@ -632,11 +632,11 @@ export function openDocs(ctx: Ctx): Cmd {
     const { document, position } = await workspace.getCurrentState();
     if (!isWgslDocument(document)) return;
 
-    const param: TextDocumentPositionParams = {
+    const parameters: TextDocumentPositionParameters = {
       textDocument: { uri: document.uri },
       position,
     };
-    const doclink = await ctx.client.sendRequest(wa.openDocs, param);
+    const doclink = await ctx.client.sendRequest(wa.openDocs, parameter);
     if (doclink) {
       if (doclink.local) {
         const exist = existsSync(Uri.parse(doclink.local).fsPath);
@@ -671,11 +671,11 @@ export function interpretFunction(ctx: Ctx): Cmd {
     const { document, position } = await workspace.getCurrentState();
     if (!isWgslDocument(document)) return;
 
-    const param: TextDocumentPositionParams = {
+    const parameters: TextDocumentPositionParameters = {
       textDocument: { uri: document.uri },
       position,
     };
-    const ret = await ctx.client.sendRequest(wa.interpretFunction, param);
+    const ret = await ctx.client.sendRequest(wa.interpretFunction, parameter);
     if (!ret) return;
     const nvim = workspace.nvim;
     nvim.pauseNotification();
@@ -751,12 +751,12 @@ function moveItem(ctx: Ctx, direction: wa.Direction): Cmd {
     const mode = (await workspace.nvim.call('visualmode')) as string;
     if (mode) range = await window.getSelectedRange(mode);
     if (!range) range = Range.create(position, position);
-    const params: wa.MoveItemParams = {
+    const parameters: wa.MoveItemParameters = {
       direction,
       textDocument: { uri: document.uri },
       range,
     };
-    const edits = await ctx.client.sendRequest(wa.moveItem, params);
+    const edits = await ctx.client.sendRequest(wa.moveItem, parameters);
     if (!edits?.length) return;
 
     const wsEdit: WorkspaceEdit = {
@@ -866,10 +866,10 @@ export function viewItemTree(ctx: Ctx): Cmd {
     const { document } = await workspace.getCurrentState();
     if (!isWgslDocument(document)) return;
 
-    const param: wa.ViewItemTreeParams = {
+    const parameters: wa.ViewItemTreeParameters = {
       textDocument: { uri: document.uri },
     };
-    const ret = await ctx.client.sendRequest(wa.viewItemTree, param);
+    const ret = await ctx.client.sendRequest(wa.viewItemTree, parameter);
     if (!ret) return;
     const nvim = workspace.nvim;
     nvim.pauseNotification();

@@ -9,25 +9,25 @@ export interface Env {
 export class Config {
   private readonly rootSection = 'wgsl-analyzer';
   private readonly requiresReloadOpts = ['server', 'webby', 'files', 'updates', 'lens', 'inlayHints'].map(
-    (opt) => `${this.rootSection}.${opt}`,
+    (option) => `${this.rootSection}.${option}`,
   );
-  private cfg: WorkspaceConfiguration;
+  private configuration: WorkspaceConfiguration;
 
   constructor() {
     workspace.onDidChangeConfiguration((event) => this.onConfigChange(event));
-    this.cfg = workspace.getConfiguration(this.rootSection);
+    this.configuration = workspace.getConfiguration(this.rootSection);
   }
 
   private async onConfigChange(event: ConfigurationChangeEvent) {
-    this.cfg = workspace.getConfiguration(this.rootSection);
+    this.configuration = workspace.getConfiguration(this.rootSection);
 
-    const requiresReloadOpt = this.requiresReloadOpts.find((opt) => event.affectsConfiguration(opt));
-    if (!requiresReloadOpt) return;
+    const requiresReloadOption = this.requiresReloadOpts.find((option) => event.affectsConfiguration(option));
+    if (!requiresReloadOption) return;
 
     let reload = !!this.restartServerOnConfigChange;
     if (!reload) {
-      const msg = `Changing "${requiresReloadOpt}" requires a reload`;
-      reload = await window.showPrompt(`${msg}. Reload now?`);
+      const message = `Changing "${requiresReloadOption}" requires a reload`;
+      reload = await window.showPrompt(`${message}. Reload now?`);
     }
     if (reload) {
       await commands.executeCommand('wgsl-analyzer.reload');
@@ -35,15 +35,15 @@ export class Config {
   }
 
   get serverPath() {
-    return this.cfg.get<null | string>('server.path') ?? this.cfg.get<null | string>('serverPath');
+    return this.configuration.get<null | string>('server.path') ?? this.configuration.get<null | string>('serverPath');
   }
 
   get serverExtraEnv() {
-    return this.cfg.get<Env>('server.extraEnv') ?? {};
+    return this.configuration.get<Env>('server.extraEnv') ?? {};
   }
 
   get restartServerOnConfigChange() {
-    return this.cfg.get<boolean>('restartServerOnConfigChange');
+    return this.configuration.get<boolean>('restartServerOnConfigChange');
   }
 
   get inlayHint() {
@@ -54,43 +54,43 @@ export class Config {
 
   get debug() {
     return {
-      runtime: this.cfg.get<string>('debug.runtime'),
+      runtime: this.configuration.get<string>('debug.runtime'),
       vimspectorConfiguration: {
-        name: this.cfg.get<string>('debug.vimspector.configuration.name'),
+        name: this.configuration.get<string>('debug.vimspector.configuration.name'),
       },
       nvimdapConfiguration: {
-        template: this.cfg.get<string>('debug.nvimdap.configuration.template'),
+        template: this.configuration.get<string>('debug.nvimdap.configuration.template'),
       },
     };
   }
 
   get prompt() {
-    return this.cfg.get<boolean | 'neverDownload'>('updates.prompt', true);
+    return this.configuration.get<boolean | 'neverDownload'>('updates.prompt', true);
   }
 
   get channel() {
-    return this.cfg.get<UpdatesChannel>('updates.channel')!;
+    return this.configuration.get<UpdatesChannel>('updates.channel')!;
   }
 
   get checkOnStartup() {
-    return this.cfg.get<boolean>('updates.checkOnStartup');
+    return this.configuration.get<boolean>('updates.checkOnStartup');
   }
 
   get terminal() {
     return {
-      startinsert: this.cfg.get<boolean>('terminal.startinsert'),
+      startinsert: this.configuration.get<boolean>('terminal.startinsert'),
     };
   }
 
   get enable() {
-    return this.cfg.get<boolean>('enable');
+    return this.configuration.get<boolean>('enable');
   }
 
   get disableProgressNotifications() {
-    return this.cfg.get<boolean>('disableProgressNotifications');
+    return this.configuration.get<boolean>('disableProgressNotifications');
   }
 
   get disablePullDiagnostic() {
-    return this.cfg.get<boolean>('disablePullDiagnostic');
+    return this.configuration.get<boolean>('disablePullDiagnostic');
   }
 }

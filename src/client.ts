@@ -12,7 +12,7 @@ import {
   type ServerOptions,
   type StaticFeature,
 } from 'coc.nvim';
-import { CodeAction, CodeActionRequest, type CodeActionParams } from 'vscode-languageserver-protocol';
+import { CodeAction, CodeActionRequest, type CodeActionParameters } from 'vscode-languageserver-protocol';
 import type { Config } from './config';
 import * as wa from './lsp_ext';
 
@@ -33,8 +33,8 @@ class ExperimentalFeatures implements StaticFeature {
     };
     capabilities.experimental = caps;
   }
-  initialize(): void {}
-  dispose(): void {}
+  initialize(): void { }
+  dispose(): void { }
 }
 
 function isCodeActionWithoutEditsAndCommands(value: any): boolean {
@@ -86,19 +86,19 @@ export function createClient(bin: string, config: Config): LanguageClient {
           positionOrRange = await window.getSelectedRange(mode);
         }
         if (!positionOrRange) positionOrRange = position;
-        const param: wa.HoverParams = {
+        const parameters: wa.HoverParameters = {
           position: positionOrRange || position,
           textDocument: { uri: document.uri },
         };
-        return await client.sendRequest(wa.hover, param, token);
+        return await client.sendRequest(wa.hover, parameters, token);
       },
       async provideCodeActions(document, range, context, token) {
-        const params: CodeActionParams = {
+        const parameters: CodeActionParameters = {
           textDocument: { uri: document.uri },
           range,
           context,
         };
-        const values = await client.sendRequest(CodeActionRequest.type.method, params, token);
+        const values = await client.sendRequest(CodeActionRequest.type.method, parameters, token);
         if (values === null) return undefined;
         const result: (CodeAction | Command)[] = [];
         for (const item of values as (Command | CodeAction)[]) {
@@ -135,17 +135,17 @@ export function createClient(bin: string, config: Config): LanguageClient {
   // This also requires considering our settings strategy, which is work which needs doing
   // @ts-ignore The tracer is private to vscode-languageclient, but we need access to it to not log publishDecorations requests
   client._tracer = {
-    log: (msg: string | unknown, data?: string) => {
-      if (typeof msg === 'string') {
-        if (msg.includes('wgsl-analyzer/publishDecorations') || msg.includes('wgsl-analyzer/decorationsRequest')) {
+    log: (message: string | unknown, data?: string) => {
+      if (typeof message === 'string') {
+        if (message.includes('wgsl-analyzer/publishDecorations') || message.includes('wgsl-analyzer/decorationsRequest')) {
           // Don't log publish decorations requests
         } else {
           // @ts-ignore This is just a utility function
-          client.logTrace(msg, data);
+          client.logTrace(message, data);
         }
       } else {
         // @ts-ignore
-        client.logObjectTrace(msg);
+        client.logObjectTrace(message);
       }
     },
   };

@@ -64,7 +64,7 @@ export class Ctx {
     }
 
     const client = createClient(bin, this.config);
-    this.extCtx.subscriptions.push(services.registLanguageClient(client));
+    this.extCtx.subscriptions.push(services.registerLanguageClient(client));
     const watcher = workspace.createFileSystemWatcher('**/webby.toml');
     this.extCtx.subscriptions.push(watcher);
     watcher.onDidChange(async () => await commands.executeCommand('wgsl-analyzer.reloadWorkspace'));
@@ -134,13 +134,13 @@ export class Ctx {
       await downloadServer(this.extCtx, latest);
     } catch (e) {
       console.error(e);
-      let msg = 'Install wgsl-analyzer failed, please try again';
+      let message = 'Install wgsl-analyzer failed, please try again';
       // @ts-ignore
       if (e.code === 'EBUSY' || e.code === 'ETXTBSY' || e.code === 'EPERM') {
-        msg =
+        message =
           'Install wgsl-analyzer failed, other Vim instances might be using it, you should close them and try again';
       }
-      window.showInformationMessage(msg, 'error');
+      window.showInformationMessage(message, 'error');
       return;
     }
     await this.client.stop();
@@ -172,12 +172,12 @@ export class Ctx {
       return;
     }
 
-    const msg = `wgsl-analyzer has a new release: ${latest.tag}, you're using ${old}. Would you like to download from GitHub`;
+    const message = `wgsl-analyzer has a new release: ${latest.tag}, you're using ${old}. Would you like to download from GitHub`;
     let ret = 0;
     if (this.config.prompt === true) {
       ret = await window.showQuickpick(
         ['Yes, download the latest wgsl-analyzer', 'Check GitHub releases', 'Cancel'],
-        msg,
+        message,
       );
     }
     if (ret === 0) {
@@ -186,15 +186,15 @@ export class Ctx {
       }
       try {
         await downloadServer(this.extCtx, latest);
-      } catch (e) {
-        console.error(e);
-        let msg = 'Upgrade wgsl-analyzer failed, please try again';
+      } catch (exception) {
+        console.error(exception);
+        let message = 'Upgrade wgsl-analyzer failed, please try again';
         // @ts-ignore
-        if (e.code === 'EBUSY' || e.code === 'ETXTBSY' || e.code === 'EPERM') {
-          msg =
+        if (exception.code === 'EBUSY' || exception.code === 'ETXTBSY' || exception.code === 'EPERM') {
+          message =
             'Upgrade wgsl-analyzer failed, other Vim instances might be using it, you should close them and try again';
         }
-        window.showInformationMessage(msg, 'error');
+        window.showInformationMessage(message, 'error');
         return;
       }
       await this.client.stop();
@@ -204,7 +204,7 @@ export class Ctx {
     } else if (ret === 1) {
       await commands
         .executeCommand('vscode.open', 'https://github.com/wgsl-analyzer/wgsl-analyzer/releases')
-        .catch(() => {});
+        .catch(() => { });
     }
   }
 }

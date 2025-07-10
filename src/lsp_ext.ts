@@ -6,8 +6,8 @@ import * as lc from 'coc.nvim';
 
 // wgsl-analyzer overrides
 
-export const hover = new lc.RequestType<HoverParams, (lc.Hover & { actions: CommandLinkGroup[] }) | null, void>('textDocument/hover');
-export type HoverParams = {
+export const hover = new lc.RequestType<HoverParameters, (lc.Hover & { actions: CommandLinkGroup[] }) | null, void>('textDocument/hover');
+export type HoverParameters = {
   workDoneToken?: lc.ProgressToken;
   textDocument: lc.TextDocumentIdentifier;
   position: lc.Range | lc.Position;
@@ -25,28 +25,28 @@ export type CommandLinkGroup = {
 
 // wgsl-analyzer extensions
 
-export const analyzerStatus = new lc.RequestType<AnalyzerStatusParams, string, void>('wgsl-analyzer/analyzerStatus');
+export const analyzerStatus = new lc.RequestType<AnalyzerStatusParameters, string, void>('wgsl-analyzer/analyzerStatus');
 export const cancelFlycheck = new lc.NotificationType0('wgsl-analyzer/cancelFlycheck');
 export const clearFlycheck = new lc.NotificationType0('wgsl-analyzer/clearFlycheck');
 export const memoryUsage = new lc.RequestType0<string, void>('wgsl-analyzer/memoryUsage');
 export const openServerLogs = new lc.NotificationType0('wgsl-analyzer/openServerLogs');
-export const relatedTests = new lc.RequestType<lc.TextDocumentPositionParams, TestInfo[], void>('wgsl-analyzer/relatedTests');
+export const relatedTests = new lc.RequestType<lc.TextDocumentPositionParams, TestInfo[], void>('wgsl-analyzer/relatedTests'); // spellchecker:disable-line
 export const reloadWorkspace = new lc.RequestType0<null, void>('wgsl-analyzer/reloadWorkspace');
 
 export const runFlycheck = new lc.NotificationType<{
   textDocument: lc.TextDocumentIdentifier | null;
 }>('wgsl-analyzer/runFlycheck');
 export const shufflePackageGraph = new lc.RequestType0<null, void>('wgsl-analyzer/shufflePackageGraph');
-export const viewSyntaxTree = new lc.RequestType<SyntaxTreeParams, string, void>('wgsl-analyzer/viewSyntaxTree');
-export const viewPackageGraph = new lc.RequestType<ViewPackageGraphParams, string, void>('wgsl-analyzer/viewPackageGraph');
+export const viewSyntaxTree = new lc.RequestType<SyntaxTreeParameters, string, void>('wgsl-analyzer/viewSyntaxTree');
+export const viewPackageGraph = new lc.RequestType<ViewPackageGraphParameters, string, void>('wgsl-analyzer/viewPackageGraph');
 export const viewFileText = new lc.RequestType<lc.TextDocumentIdentifier, string, void>('wgsl-analyzer/viewFileText');
-export const viewHir = new lc.RequestType<lc.TextDocumentPositionParams, string, void>('wgsl-analyzer/viewHir');
-export const viewMir = new lc.RequestType<lc.TextDocumentPositionParams, string, void>('wgsl-analyzer/viewMir');
-export const interpretFunction = new lc.RequestType<lc.TextDocumentPositionParams, string, void>('wgsl-analyzer/interpretFunction');
-export const viewItemTree = new lc.RequestType<ViewItemTreeParams, string, void>('wgsl-analyzer/viewItemTree');
+export const viewHir = new lc.RequestType<lc.TextDocumentPositionParams, string, void>('wgsl-analyzer/viewHir'); // spellchecker:disable-line
+export const viewMir = new lc.RequestType<lc.TextDocumentPositionParams, string, void>('wgsl-analyzer/viewMir'); // spellchecker:disable-line
+export const interpretFunction = new lc.RequestType<lc.TextDocumentPositionParams, string, void>('wgsl-analyzer/interpretFunction'); // spellchecker:disable-line
+export const viewItemTree = new lc.RequestType<ViewItemTreeParameters, string, void>('wgsl-analyzer/viewItemTree');
 
-export type DiscoverTestParams = { testId?: string | undefined };
-export type RunTestParams = {
+export type DiscoverTestParameters = { testId?: string | undefined };
+export type RunTestParameters = {
   include?: string[] | undefined;
   exclude?: string[] | undefined;
 };
@@ -66,18 +66,18 @@ export type DiscoverTestResults = {
   scopeFile: lc.TextDocumentIdentifier[] | undefined;
 };
 export type TestState = { tag: 'failed'; message: string } | { tag: 'passed' } | { tag: 'started' } | { tag: 'enqueued' } | { tag: 'skipped' };
-export type ChangeTestStateParams = { testId: string; state: TestState };
-export const discoverTest = new lc.RequestType<DiscoverTestParams, DiscoverTestResults, void>('experimental/discoverTest');
+export type ChangeTestStateParameters = { testId: string; state: TestState };
+export const discoverTest = new lc.RequestType<DiscoverTestParameters, DiscoverTestResults, void>('experimental/discoverTest');
 export const discoveredTests = new lc.NotificationType<DiscoverTestResults>('experimental/discoveredTests');
-export const runTest = new lc.RequestType<RunTestParams, void, void>('experimental/runTest');
+export const runTest = new lc.RequestType<RunTestParameters, void, void>('experimental/runTest');
 export const abortRunTest = new lc.NotificationType0('experimental/abortRunTest');
 export const endRunTest = new lc.NotificationType0('experimental/endRunTest');
 export const appendOutputToRunTest = new lc.NotificationType<string>('experimental/appendOutputToRunTest');
-export const changeTestState = new lc.NotificationType<ChangeTestStateParams>('experimental/changeTestState');
+export const changeTestState = new lc.NotificationType<ChangeTestStateParameters>('experimental/changeTestState');
 
-export type AnalyzerStatusParams = { textDocument?: lc.TextDocumentIdentifier };
+export type AnalyzerStatusParameters = { textDocument?: lc.TextDocumentIdentifier };
 
-export interface FetchPackageListParams {}
+export interface FetchPackageListParameters { }
 
 export interface FetchPackageListResult {
   dependencies: {
@@ -87,9 +87,9 @@ export interface FetchPackageListResult {
   }[];
 }
 
-export const fetchPackageList = new lc.RequestType<FetchPackageListParams, FetchPackageListResult, void>('wgsl-analyzer/fetchPackageList');
+export const fetchPackageList = new lc.RequestType<FetchPackageListParameters, FetchPackageListResult, void>('wgsl-analyzer/fetchPackageList');
 
-export interface FetchPackageGraphParams {}
+export interface FetchPackageGraphParameters { }
 
 export interface FetchPackageGraphResult {
   dependencies: {
@@ -99,49 +99,49 @@ export interface FetchPackageGraphResult {
   }[];
 }
 
-export const fetchPackageGraph = new lc.RequestType<FetchPackageGraphParams, FetchPackageGraphResult, void>('wgsl-analyzer/fetchPackageGraph');
+export const fetchPackageGraph = new lc.RequestType<FetchPackageGraphParameters, FetchPackageGraphResult, void>('wgsl-analyzer/fetchPackageGraph');
 
 export type TestInfo = { runnable: Runnable };
-export type SyntaxTreeParams = {
+export type SyntaxTreeParameters = {
   textDocument: lc.TextDocumentIdentifier;
   range: lc.Range | null;
 };
-export type ViewPackageGraphParams = { full: boolean };
-export type ViewItemTreeParams = { textDocument: lc.TextDocumentIdentifier };
+export type ViewPackageGraphParameters = { full: boolean };
+export type ViewItemTreeParameters = { textDocument: lc.TextDocumentIdentifier };
 
 // experimental extensions
 
-export const joinLines = new lc.RequestType<JoinLinesParams, lc.TextEdit[], void>('experimental/joinLines');
-export const matchingBrace = new lc.RequestType<MatchingBraceParams, lc.Position[], void>('experimental/matchingBrace');
-export const moveItem = new lc.RequestType<MoveItemParams, lc.TextEdit[], void>('experimental/moveItem');
-export const onEnter = new lc.RequestType<lc.TextDocumentPositionParams, lc.TextEdit[], void>('experimental/onEnter');
-export const openWebbyToml = new lc.RequestType<OpenWebbyTomlParams, lc.Location, void>('experimental/openWebbyToml');
+export const joinLines = new lc.RequestType<JoinLinesParameters, lc.TextEdit[], void>('experimental/joinLines');
+export const matchingBrace = new lc.RequestType<MatchingBraceParameters, lc.Position[], void>('experimental/matchingBrace');
+export const moveItem = new lc.RequestType<MoveItemParameters, lc.TextEdit[], void>('experimental/moveItem');
+export const onEnter = new lc.RequestType<lc.TextDocumentPositionParams, lc.TextEdit[], void>('experimental/onEnter'); // spellchecker:disable-line
+export const openWebbyToml = new lc.RequestType<OpenWebbyTomlParameters, lc.Location, void>('experimental/openWebbyToml');
 export interface DocsUrls {
   local?: string;
   web?: string;
 }
-export const openDocs = new lc.RequestType<lc.TextDocumentPositionParams, DocsUrls, void>('experimental/externalDocs');
-export const parentModule = new lc.RequestType<lc.TextDocumentPositionParams, lc.LocationLink[] | null, void>('experimental/parentModule');
-export const runnables = new lc.RequestType<RunnablesParams, Runnable[], void>('experimental/runnables');
-export const serverStatus = new lc.NotificationType<ServerStatusParams>('experimental/serverStatus');
-export const ssr = new lc.RequestType<SsrParams, lc.WorkspaceEdit, void>('experimental/ssr');
-export const viewRecursiveMemoryLayout = new lc.RequestType<lc.TextDocumentPositionParams, RecursiveMemoryLayout | null, void>('wgsl-analyzer/viewRecursiveMemoryLayout');
+export const openDocs = new lc.RequestType<lc.TextDocumentPositionParams, DocsUrls, void>('experimental/externalDocs'); // spellchecker:disable-line
+export const parentModule = new lc.RequestType<lc.TextDocumentPositionParams, lc.LocationLink[] | null, void>('experimental/parentModule'); // spellchecker:disable-line
+export const runnables = new lc.RequestType<RunnablesParameters, Runnable[], void>('experimental/runnables');
+export const serverStatus = new lc.NotificationType<ServerStatusParameters>('experimental/serverStatus');
+export const ssr = new lc.RequestType<SsrParameters, lc.WorkspaceEdit, void>('experimental/ssr');
+export const viewRecursiveMemoryLayout = new lc.RequestType<lc.TextDocumentPositionParams, RecursiveMemoryLayout | null, void>('wgsl-analyzer/viewRecursiveMemoryLayout'); // spellchecker:disable-line
 
-export type JoinLinesParams = {
+export type JoinLinesParameters = {
   textDocument: lc.TextDocumentIdentifier;
   ranges: lc.Range[];
 };
-export type MatchingBraceParams = {
+export type MatchingBraceParameters = {
   textDocument: lc.TextDocumentIdentifier;
   positions: lc.Position[];
 };
-export type MoveItemParams = {
+export type MoveItemParameters = {
   textDocument: lc.TextDocumentIdentifier;
   range: lc.Range;
   direction: Direction;
 };
 export type Direction = 'Up' | 'Down';
-export type OpenWebbyTomlParams = {
+export type OpenWebbyTomlParameters = {
   textDocument: lc.TextDocumentIdentifier;
 };
 export type Runnable = {
@@ -197,16 +197,16 @@ export type WebbyRunnableArgs = {
   overrideWebby?: string;
 } & CommonRunnableArgs;
 
-export type RunnablesParams = {
+export type RunnablesParameters = {
   textDocument: lc.TextDocumentIdentifier;
   position: lc.Position | null;
 };
-export type ServerStatusParams = {
+export type ServerStatusParameters = {
   health: 'ok' | 'warning' | 'error';
   quiescent: boolean;
   message?: string;
 };
-export type SsrParams = {
+export type SsrParameters = {
   query: string;
   parseOnly: boolean;
   textDocument: lc.TextDocumentIdentifier;
@@ -228,6 +228,6 @@ export type RecursiveMemoryLayout = {
   nodes: RecursiveMemoryLayoutNode[];
 };
 
-export const unindexedProject = new lc.NotificationType<UnindexedProjectParams>('wgsl-analyzer/unindexedProject');
+export const unindexedProject = new lc.NotificationType<UnindexedProjectParameters>('wgsl-analyzer/unindexedProject');
 
-export type UnindexedProjectParams = { textDocuments: lc.TextDocumentIdentifier[] };
+export type UnindexedProjectParameters = { textDocuments: lc.TextDocumentIdentifier[] };
