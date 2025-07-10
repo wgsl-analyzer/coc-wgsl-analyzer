@@ -1,16 +1,12 @@
 /**
- * This file mirrors `crates/rust-analyzer/src/lsp_ext.rs` declarations.
+ * This file mirrors `crates/wgsl-analyzer/src/lsp_ext.rs` declarations.
  */
 
-import * as lc from "coc.nvim";
+import * as lc from 'coc.nvim';
 
-// rust-analyzer overrides
+// wgsl-analyzer overrides
 
-export const hover = new lc.RequestType<
-  HoverParams,
-  (lc.Hover & { actions: CommandLinkGroup[] }) | null,
-  void
->('textDocument/hover');
+export const hover = new lc.RequestType<HoverParams, (lc.Hover & { actions: CommandLinkGroup[] }) | null, void>('textDocument/hover');
 export type HoverParams = {
   workDoneToken?: lc.ProgressToken;
   textDocument: lc.TextDocumentIdentifier;
@@ -27,49 +23,27 @@ export type CommandLinkGroup = {
   commands: CommandLink[];
 };
 
-// rust-analyzer extensions
+// wgsl-analyzer extensions
 
-export const analyzerStatus = new lc.RequestType<AnalyzerStatusParams, string, void>(
-  "rust-analyzer/analyzerStatus",
-);
-export const cancelFlycheck = new lc.NotificationType0("rust-analyzer/cancelFlycheck");
-export const clearFlycheck = new lc.NotificationType0("rust-analyzer/clearFlycheck");
-export const expandMacro = new lc.RequestType<ExpandMacroParams, ExpandedMacro | null, void>(
-  "rust-analyzer/expandMacro",
-);
-export const memoryUsage = new lc.RequestType0<string, void>("rust-analyzer/memoryUsage");
-export const openServerLogs = new lc.NotificationType0("rust-analyzer/openServerLogs");
-export const relatedTests = new lc.RequestType<lc.TextDocumentPositionParams, TestInfo[], void>(
-  "rust-analyzer/relatedTests",
-);
-export const reloadWorkspace = new lc.RequestType0<null, void>("rust-analyzer/reloadWorkspace");
-export const rebuildProcMacros = new lc.RequestType0<null, void>("rust-analyzer/rebuildProcMacros");
+export const analyzerStatus = new lc.RequestType<AnalyzerStatusParams, string, void>('wgsl-analyzer/analyzerStatus');
+export const cancelFlycheck = new lc.NotificationType0('wgsl-analyzer/cancelFlycheck');
+export const clearFlycheck = new lc.NotificationType0('wgsl-analyzer/clearFlycheck');
+export const memoryUsage = new lc.RequestType0<string, void>('wgsl-analyzer/memoryUsage');
+export const openServerLogs = new lc.NotificationType0('wgsl-analyzer/openServerLogs');
+export const relatedTests = new lc.RequestType<lc.TextDocumentPositionParams, TestInfo[], void>('wgsl-analyzer/relatedTests');
+export const reloadWorkspace = new lc.RequestType0<null, void>('wgsl-analyzer/reloadWorkspace');
 
 export const runFlycheck = new lc.NotificationType<{
   textDocument: lc.TextDocumentIdentifier | null;
-}>("rust-analyzer/runFlycheck");
-export const shuffleCrateGraph = new lc.RequestType0<null, void>("rust-analyzer/shuffleCrateGraph");
-export const viewSyntaxTree = new lc.RequestType<SyntaxTreeParams, string, void>(
-  "rust-analyzer/viewSyntaxTree",
-);
-export const viewCrateGraph = new lc.RequestType<ViewCrateGraphParams, string, void>(
-  "rust-analyzer/viewCrateGraph",
-);
-export const viewFileText = new lc.RequestType<lc.TextDocumentIdentifier, string, void>(
-  "rust-analyzer/viewFileText",
-);
-export const viewHir = new lc.RequestType<lc.TextDocumentPositionParams, string, void>(
-  "rust-analyzer/viewHir",
-);
-export const viewMir = new lc.RequestType<lc.TextDocumentPositionParams, string, void>(
-  "rust-analyzer/viewMir",
-);
-export const interpretFunction = new lc.RequestType<lc.TextDocumentPositionParams, string, void>(
-  "rust-analyzer/interpretFunction",
-);
-export const viewItemTree = new lc.RequestType<ViewItemTreeParams, string, void>(
-  "rust-analyzer/viewItemTree",
-);
+}>('wgsl-analyzer/runFlycheck');
+export const shufflePackageGraph = new lc.RequestType0<null, void>('wgsl-analyzer/shufflePackageGraph');
+export const viewSyntaxTree = new lc.RequestType<SyntaxTreeParams, string, void>('wgsl-analyzer/viewSyntaxTree');
+export const viewPackageGraph = new lc.RequestType<ViewPackageGraphParams, string, void>('wgsl-analyzer/viewPackageGraph');
+export const viewFileText = new lc.RequestType<lc.TextDocumentIdentifier, string, void>('wgsl-analyzer/viewFileText');
+export const viewHir = new lc.RequestType<lc.TextDocumentPositionParams, string, void>('wgsl-analyzer/viewHir');
+export const viewMir = new lc.RequestType<lc.TextDocumentPositionParams, string, void>('wgsl-analyzer/viewMir');
+export const interpretFunction = new lc.RequestType<lc.TextDocumentPositionParams, string, void>('wgsl-analyzer/interpretFunction');
+export const viewItemTree = new lc.RequestType<ViewItemTreeParams, string, void>('wgsl-analyzer/viewItemTree');
 
 export type DiscoverTestParams = { testId?: string | undefined };
 export type RunTestParams = {
@@ -79,7 +53,7 @@ export type RunTestParams = {
 export type TestItem = {
   id: string;
   label: string;
-  kind: "package" | "module" | "test";
+  kind: 'package' | 'module' | 'test';
   canResolveChildren: boolean;
   parent?: string | undefined;
   textDocument?: lc.TextDocumentIdentifier | undefined;
@@ -91,120 +65,67 @@ export type DiscoverTestResults = {
   scope: string[] | undefined;
   scopeFile: lc.TextDocumentIdentifier[] | undefined;
 };
-export type TestState =
-  | { tag: "failed"; message: string }
-  | { tag: "passed" }
-  | { tag: "started" }
-  | { tag: "enqueued" }
-  | { tag: "skipped" };
+export type TestState = { tag: 'failed'; message: string } | { tag: 'passed' } | { tag: 'started' } | { tag: 'enqueued' } | { tag: 'skipped' };
 export type ChangeTestStateParams = { testId: string; state: TestState };
-export const discoverTest = new lc.RequestType<DiscoverTestParams, DiscoverTestResults, void>(
-  "experimental/discoverTest",
-);
-export const discoveredTests = new lc.NotificationType<DiscoverTestResults>(
-  "experimental/discoveredTests",
-);
-export const runTest = new lc.RequestType<RunTestParams, void, void>("experimental/runTest");
-export const abortRunTest = new lc.NotificationType0("experimental/abortRunTest");
-export const endRunTest = new lc.NotificationType0("experimental/endRunTest");
-export const appendOutputToRunTest = new lc.NotificationType<string>(
-  "experimental/appendOutputToRunTest",
-);
-export const changeTestState = new lc.NotificationType<ChangeTestStateParams>(
-  "experimental/changeTestState",
-);
+export const discoverTest = new lc.RequestType<DiscoverTestParams, DiscoverTestResults, void>('experimental/discoverTest');
+export const discoveredTests = new lc.NotificationType<DiscoverTestResults>('experimental/discoveredTests');
+export const runTest = new lc.RequestType<RunTestParams, void, void>('experimental/runTest');
+export const abortRunTest = new lc.NotificationType0('experimental/abortRunTest');
+export const endRunTest = new lc.NotificationType0('experimental/endRunTest');
+export const appendOutputToRunTest = new lc.NotificationType<string>('experimental/appendOutputToRunTest');
+export const changeTestState = new lc.NotificationType<ChangeTestStateParams>('experimental/changeTestState');
 
 export type AnalyzerStatusParams = { textDocument?: lc.TextDocumentIdentifier };
 
-export interface FetchDependencyListParams {}
+export interface FetchPackageListParams {}
 
-export interface FetchDependencyListResult {
-  crates: {
+export interface FetchPackageListResult {
+  dependencies: {
     name?: string;
     version?: string;
     path: string;
   }[];
 }
 
-export const fetchDependencyList = new lc.RequestType<
-  FetchDependencyListParams,
-  FetchDependencyListResult,
-  void
->("rust-analyzer/fetchDependencyList");
+export const fetchPackageList = new lc.RequestType<FetchPackageListParams, FetchPackageListResult, void>('wgsl-analyzer/fetchPackageList');
 
-export interface FetchDependencyGraphParams {}
+export interface FetchPackageGraphParams {}
 
-export interface FetchDependencyGraphResult {
-  crates: {
+export interface FetchPackageGraphResult {
+  dependencies: {
     name: string;
     version: string;
     path: string;
   }[];
 }
 
-export const fetchDependencyGraph = new lc.RequestType<
-  FetchDependencyGraphParams,
-  FetchDependencyGraphResult,
-  void
->("rust-analyzer/fetchDependencyGraph");
+export const fetchPackageGraph = new lc.RequestType<FetchPackageGraphParams, FetchPackageGraphResult, void>('wgsl-analyzer/fetchPackageGraph');
 
-export type ExpandMacroParams = {
-  textDocument: lc.TextDocumentIdentifier;
-  position: lc.Position;
-};
-export type ExpandedMacro = {
-  name: string;
-  expansion: string;
-};
 export type TestInfo = { runnable: Runnable };
 export type SyntaxTreeParams = {
   textDocument: lc.TextDocumentIdentifier;
   range: lc.Range | null;
 };
-export type ViewCrateGraphParams = { full: boolean };
+export type ViewPackageGraphParams = { full: boolean };
 export type ViewItemTreeParams = { textDocument: lc.TextDocumentIdentifier };
 
 // experimental extensions
 
-export const joinLines = new lc.RequestType<JoinLinesParams, lc.TextEdit[], void>(
-  "experimental/joinLines",
-);
-export const matchingBrace = new lc.RequestType<MatchingBraceParams, lc.Position[], void>(
-  "experimental/matchingBrace",
-);
-export const moveItem = new lc.RequestType<MoveItemParams, lc.TextEdit[], void>(
-  "experimental/moveItem",
-);
-export const onEnter = new lc.RequestType<lc.TextDocumentPositionParams, lc.TextEdit[], void>(
-  "experimental/onEnter",
-);
-export const openCargoToml = new lc.RequestType<OpenCargoTomlParams, lc.Location, void>(
-  "experimental/openCargoToml",
-);
+export const joinLines = new lc.RequestType<JoinLinesParams, lc.TextEdit[], void>('experimental/joinLines');
+export const matchingBrace = new lc.RequestType<MatchingBraceParams, lc.Position[], void>('experimental/matchingBrace');
+export const moveItem = new lc.RequestType<MoveItemParams, lc.TextEdit[], void>('experimental/moveItem');
+export const onEnter = new lc.RequestType<lc.TextDocumentPositionParams, lc.TextEdit[], void>('experimental/onEnter');
+export const openWebbyToml = new lc.RequestType<OpenWebbyTomlParams, lc.Location, void>('experimental/openWebbyToml');
 export interface DocsUrls {
   local?: string;
   web?: string;
 }
-export const openDocs = new lc.RequestType<lc.TextDocumentPositionParams, DocsUrls, void>(
-  "experimental/externalDocs",
-);
-export const parentModule = new lc.RequestType<
-  lc.TextDocumentPositionParams,
-  lc.LocationLink[] | null,
-  void
->("experimental/parentModule");
-export const runnables = new lc.RequestType<RunnablesParams, Runnable[], void>(
-  "experimental/runnables",
-);
-export const serverStatus = new lc.NotificationType<ServerStatusParams>(
-  "experimental/serverStatus",
-);
-export const ssr = new lc.RequestType<SsrParams, lc.WorkspaceEdit, void>("experimental/ssr");
-export const viewRecursiveMemoryLayout = new lc.RequestType<
-  lc.TextDocumentPositionParams,
-  RecursiveMemoryLayout | null,
-  void
->("rust-analyzer/viewRecursiveMemoryLayout");
+export const openDocs = new lc.RequestType<lc.TextDocumentPositionParams, DocsUrls, void>('experimental/externalDocs');
+export const parentModule = new lc.RequestType<lc.TextDocumentPositionParams, lc.LocationLink[] | null, void>('experimental/parentModule');
+export const runnables = new lc.RequestType<RunnablesParams, Runnable[], void>('experimental/runnables');
+export const serverStatus = new lc.NotificationType<ServerStatusParams>('experimental/serverStatus');
+export const ssr = new lc.RequestType<SsrParams, lc.WorkspaceEdit, void>('experimental/ssr');
+export const viewRecursiveMemoryLayout = new lc.RequestType<lc.TextDocumentPositionParams, RecursiveMemoryLayout | null, void>('wgsl-analyzer/viewRecursiveMemoryLayout');
 
 export type JoinLinesParams = {
   textDocument: lc.TextDocumentIdentifier;
@@ -219,22 +140,22 @@ export type MoveItemParams = {
   range: lc.Range;
   direction: Direction;
 };
-export type Direction = "Up" | "Down";
-export type OpenCargoTomlParams = {
+export type Direction = 'Up' | 'Down';
+export type OpenWebbyTomlParams = {
   textDocument: lc.TextDocumentIdentifier;
 };
 export type Runnable = {
   label: string;
   location?: lc.LocationLink;
-} & (RunnableCargo | RunnableShell);
+} & (RunnableWebby | RunnableShell);
 
-type RunnableCargo = {
-  kind: "cargo";
-  args: CargoRunnableArgs;
+type RunnableWebby = {
+  kind: 'webby';
+  args: WebbyRunnableArgs;
 };
 
 type RunnableShell = {
-  kind: "shell";
+  kind: 'shell';
   args: ShellRunnableArgs;
 };
 
@@ -255,9 +176,9 @@ export type ShellRunnableArgs = {
   args: string[];
 } & CommonRunnableArgs;
 
-export type CargoRunnableArgs = {
+export type WebbyRunnableArgs = {
   /**
-   * The workspace root directory of the cargo project.
+   * The workspace root directory of the webby project.
    */
   workspaceRoot?: string;
   /**
@@ -265,15 +186,15 @@ export type CargoRunnableArgs = {
    */
   executableArgs: string[];
   /**
-   * Arguments to pass to cargo.
+   * Arguments to pass to webby.
    */
-  cargoArgs: string[];
+  webbyArgs: string[];
   /**
-   * Command to execute instead of `cargo`.
+   * Command to execute instead of `webby`.
    */
   // This is supplied by the user via config. We could pull this through the client config in the
-  // extension directly, but that would prevent us from honoring the rust-analyzer.toml for it.
-  overrideCargo?: string;
+  // extension directly, but that would prevent us from honoring the wgsl-analyzer.toml for it.
+  overrideWebby?: string;
 } & CommonRunnableArgs;
 
 export type RunnablesParams = {
@@ -281,7 +202,7 @@ export type RunnablesParams = {
   position: lc.Position | null;
 };
 export type ServerStatusParams = {
-  health: "ok" | "warning" | "error";
+  health: 'ok' | 'warning' | 'error';
   quiescent: boolean;
   message?: string;
 };
@@ -307,8 +228,6 @@ export type RecursiveMemoryLayout = {
   nodes: RecursiveMemoryLayoutNode[];
 };
 
-export const unindexedProject = new lc.NotificationType<UnindexedProjectParams>(
-  "rust-analyzer/unindexedProject",
-);
+export const unindexedProject = new lc.NotificationType<UnindexedProjectParams>('wgsl-analyzer/unindexedProject');
 
 export type UnindexedProjectParams = { textDocuments: lc.TextDocumentIdentifier[] };

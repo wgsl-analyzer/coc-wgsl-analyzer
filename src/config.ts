@@ -7,8 +7,8 @@ export interface Env {
 }
 
 export class Config {
-  private readonly rootSection = 'rust-analyzer';
-  private readonly requiresReloadOpts = ['server', 'cargo', 'procMacro', 'files', 'updates', 'lens', 'inlayHints'].map(
+  private readonly rootSection = 'wgsl-analyzer';
+  private readonly requiresReloadOpts = ['server', 'webby', 'files', 'updates', 'lens', 'inlayHints'].map(
     (opt) => `${this.rootSection}.${opt}`,
   );
   private cfg: WorkspaceConfiguration;
@@ -30,7 +30,7 @@ export class Config {
       reload = await window.showPrompt(`${msg}. Reload now?`);
     }
     if (reload) {
-      await commands.executeCommand('rust-analyzer.reload');
+      await commands.executeCommand('wgsl-analyzer.reload');
     }
   }
 

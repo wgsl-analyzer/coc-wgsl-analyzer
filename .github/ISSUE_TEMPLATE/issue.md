@@ -3,12 +3,11 @@ name: issue
 about: issue
 title: ''
 labels: ''
-assignees: fannheyward
 
 ---
 
 **What's the output of `:CocInfo`**
 
-**What's the output of `:CocCommand rust-analyzer.serverVersion`**
+**What's the output of `:CocCommand wgsl-analyzer.serverVersion`**
 
-**What's your coc-rust-analyzer version? You can get it from `:CocList extensions`**
+**What's your coc-wgsl-analyzer version? You can get it from `:CocList extensions`**

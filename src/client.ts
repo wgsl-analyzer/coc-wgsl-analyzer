@@ -14,7 +14,7 @@ import {
 } from 'coc.nvim';
 import { CodeAction, CodeActionRequest, type CodeActionParams } from 'vscode-languageserver-protocol';
 import type { Config } from './config';
-import * as ra from './lsp_ext';
+import * as wa from './lsp_ext';
 
 class ExperimentalFeatures implements StaticFeature {
   fillClientCapabilities(capabilities: any): void {
@@ -24,10 +24,10 @@ class ExperimentalFeatures implements StaticFeature {
     caps.localDocs = true;
     caps.commands = {
       commands: [
-        'rust-analyzer.runSingle',
-        'rust-analyzer.debugSingle',
-        'rust-analyzer.showReferences',
-        'rust-analyzer.gotoLocation',
+        'wgsl-analyzer.runSingle',
+        'wgsl-analyzer.debugSingle',
+        'wgsl-analyzer.showReferences',
+        'wgsl-analyzer.gotoLocation',
         'editor.action.triggerParameterHints',
       ],
     };
@@ -60,7 +60,7 @@ export function createClient(bin: string, config: Config): LanguageClient {
     options: { env, cwd: folder, shell: process.platform === 'win32' },
   };
 
-  const initializationOptions = workspace.getConfiguration('rust-analyzer');
+  const initializationOptions = workspace.getConfiguration('wgsl-analyzer');
   const disabledFeatures: string[] = [];
   if (config.disableProgressNotifications) {
     disabledFeatures.push('progress');
@@ -73,7 +73,7 @@ export function createClient(bin: string, config: Config): LanguageClient {
   }
   const serverOptions: ServerOptions = run;
   const clientOptions: LanguageClientOptions = {
-    documentSelector: [{ language: 'rust' }],
+    documentSelector: [{ language: 'wgsl' }],
     initializationOptions,
     disabledFeatures,
     progressOnInitialization: !config.disableProgressNotifications,
@@ -86,11 +86,11 @@ export function createClient(bin: string, config: Config): LanguageClient {
           positionOrRange = await window.getSelectedRange(mode);
         }
         if (!positionOrRange) positionOrRange = position;
-        const param: ra.HoverParams = {
+        const param: wa.HoverParams = {
           position: positionOrRange || position,
           textDocument: { uri: document.uri },
         };
-        return await client.sendRequest(ra.hover, param, token);
+        return await client.sendRequest(wa.hover, param, token);
       },
       async provideCodeActions(document, range, context, token) {
         const params: CodeActionParams = {
@@ -113,7 +113,7 @@ export function createClient(bin: string, config: Config): LanguageClient {
           }
 
           const command: Command = {
-            command: 'rust-analyzer.resolveCodeAction',
+            command: 'wgsl-analyzer.resolveCodeAction',
             title: item.title,
             arguments: [item],
           };
@@ -127,7 +127,7 @@ export function createClient(bin: string, config: Config): LanguageClient {
     },
   };
 
-  const client = new LanguageClient('rust-analyzer', 'Rust Analyzer Language Server', serverOptions, clientOptions);
+  const client = new LanguageClient('wgsl-analyzer', 'wgsl-analyzer Language Server', serverOptions, clientOptions);
   // HACK: This is an awful way of filtering out the decorations notifications
   // However, pending proper support, this is the most effecitve approach
   // Proper support for this would entail a change to vscode-languageclient to allow not notifying on certain messages
@@ -137,7 +137,7 @@ export function createClient(bin: string, config: Config): LanguageClient {
   client._tracer = {
     log: (msg: string | unknown, data?: string) => {
       if (typeof msg === 'string') {
-        if (msg.includes('rust-analyzer/publishDecorations') || msg.includes('rust-analyzer/decorationsRequest')) {
+        if (msg.includes('wgsl-analyzer/publishDecorations') || msg.includes('wgsl-analyzer/decorationsRequest')) {
           // Don't log publish decorations requests
         } else {
           // @ts-ignore This is just a utility function

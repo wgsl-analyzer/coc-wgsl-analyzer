@@ -20,7 +20,7 @@ async function patchelf(dest: PathLike): Promise<void> {
   const expression = `
 {src, pkgs ? import <nixpkgs> {}}:
     pkgs.stdenv.mkDerivation {
-        name = "rust-analyzer";
+        name = "wgsl-analyzer";
         inherit src;
         phases = [ "installPhase" "fixupPhase" ];
         installPhase = "cp $src $out";
@@ -94,9 +94,9 @@ function getPlatform(): string | undefined {
 
 export async function getLatestRelease(updatesChannel: UpdatesChannel): Promise<ReleaseTag | undefined> {
   console.info(`Fetching ${updatesChannel} release...`);
-  let releaseURL = 'https://api.github.com/repos/rust-analyzer/rust-analyzer/releases/latest';
+  let releaseURL = 'https://api.github.com/repos/wgsl-analyzer/wgsl-analyzer/releases/latest';
   if (updatesChannel === 'nightly') {
-    releaseURL = 'https://api.github.com/repos/rust-analyzer/rust-analyzer/releases/tags/nightly';
+    releaseURL = 'https://api.github.com/repos/wgsl-analyzer/wgsl-analyzer/releases/tags/nightly';
   }
   // @ts-ignore
   const response = await fetch(releaseURL, { agent });
@@ -122,21 +122,21 @@ export async function getLatestRelease(updatesChannel: UpdatesChannel): Promise<
   if (updatesChannel === 'nightly') {
     tag = `${release.tag_name} ${release.published_at.slice(0, 10)}`;
   }
-  const name = process.platform === 'win32' ? 'rust-analyzer.exe' : 'rust-analyzer';
+  const name = process.platform === 'win32' ? 'wgsl-analyzer.exe' : 'wgsl-analyzer';
 
   console.info(`Latest release tag: ${tag}`);
   return { asset, tag, url: asset.browser_download_url, name: name };
 }
 
 export async function downloadServer(context: ExtensionContext, release: ReleaseTag): Promise<void> {
-  console.info(`Downloading rust-analyzer ${release.tag}`);
+  console.info(`Downloading wgsl-analyzer ${release.tag}`);
   const statusItem = window.createStatusBarItem(0, { progress: true });
-  statusItem.text = `Downloading rust-analyzer ${release.tag}`;
+  statusItem.text = `Downloading wgsl-analyzer ${release.tag}`;
   statusItem.show();
 
   // @ts-ignore
   const resp = await fetch(release.url, { agent });
-  // const resp = await fetch('http://devd.io/rust-analyzer');
+  // const resp = await fetch('http://devd.io/wgsl-analyzer');
   if (!resp.ok) {
     statusItem.hide();
     throw new Error('Download failed');
@@ -147,8 +147,8 @@ export async function downloadServer(context: ExtensionContext, release: Release
   resp.body.on('data', (chunk: Buffer) => {
     cur += chunk.length;
     const p = ((cur / len) * 100).toFixed(2);
-    statusItem.text = `${p}% Downloading rust-analyzer ${release.tag}`;
-    console.info(`${p}% Downloading rust-analyzer ${release.tag}`);
+    statusItem.text = `${p}% Downloading wgsl-analyzer ${release.tag}`;
+    console.info(`${p}% Downloading wgsl-analyzer ${release.tag}`);
   });
 
   const _path = path.join(context.storagePath, release.name);
@@ -183,11 +183,11 @@ export async function downloadServer(context: ExtensionContext, release: Release
 
   try {
     if (await fs.stat('/etc/nixos')) {
-      statusItem.text = 'Patching rust-analyzer executable...';
+      statusItem.text = 'Patching wgsl-analyzer executable...';
       await patchelf(_path);
     }
-  } catch (_e) {}
+  } catch (_e) { }
 
-  console.info(`rust-analyzer has been upgrade to ${release.tag}`);
+  console.info(`wgsl-analyzer has been upgrade to ${release.tag}`);
   statusItem.hide();
 }

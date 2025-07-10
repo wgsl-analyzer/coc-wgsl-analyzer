@@ -1,36 +1,16 @@
-# coc-rust-analyzer
+# coc-wgsl-analyzer
 
-<!-- markdownlint-disable no-inline-html -->
-<a href="https://github.com/sponsors/fannheyward"><img src="https://user-images.githubusercontent.com/345274/133218454-014a4101-b36a-48c6-a1f6-342881974938.png" alt="GitHub Sponsors" /></a>
-<a href="https://patreon.com/fannheyward"><img src="https://c5.patreon.com/external/logo/become_a_patron_button.png" alt="Patreon donate button" /></a>
-<a href="https://paypal.me/fannheyward"><img src="https://user-images.githubusercontent.com/345274/104303610-41149f00-5505-11eb-88b2-5a95c53187b4.png" alt="PayPal donate button" /></a>
-
-[rust-analyzer](https://github.com/rust-lang/rust-analyzer) for Vim/Neovim, works as an extension with coc.nvim.
-
-<!-- markdownlint-disable-next-line -->
-<img width="567" alt="10" src="https://user-images.githubusercontent.com/345274/67060118-34808a00-f18e-11e9-9d76-22fff11b5802.png">
+[wgsl-analyzer](https://github.com/wgsl-analyzer/wgsl-analyzer) for Vim/Neovim, works as an extension with coc.nvim.
 
 ## Install
 
-`:CocInstall coc-rust-analyzer`
+`:CocInstall coc-wgsl-analyzer`
 
-> remove `rust-analyzer` config from `coc-settings.json` if you've set
-
-## Notes
-
-It's recommended to add `$CARGO_HOME` to `workspace.ignoredFolders` to stop rust-analyzer runs `cargo check` on sysroot crates:
-
-```json
-"workspace.ignoredFolders": [
-  "$HOME",
-  "$HOME/.cargo/**",
-  "$HOME/.rustup/**"
-],
-```
+> remove `wgsl-analyzer` config from `coc-settings.json` if you've set
 
 ## Configurations
 
-This extension is configured using a jsonc file. You can open this configuration file using the command `:CocConfig`, and it is typically located at `$HOME/.config/nvim/coc-settings.json`. You can get the configurations list from the [package.json](https://github.com/fannheyward/coc-rust-analyzer/blob/master/package.json#L72) file of this extension.
+This extension is configured using a jsonc file. You can open this configuration file using the command `:CocConfig`, and it is typically located at `$HOME/.config/nvim/coc-settings.json`. You can get the configurations list from the [package.json](https://github.com/wgsl-analyzer/coc-wgsl-analyzer/blob/main/package.json#L72) file of this extension.
 
 ## Commands
 
@@ -38,42 +18,40 @@ You can use these commands by `:CocCommand XYZ`.
 
 | Command | Description |
 | -- | -- |
-| rust-analyzer.analyzerStatus | Show rust-analyzer status |
-| rust-analyzer.debug | List available runnables of current file and debug the selected one |
-| rust-analyzer.expandMacro | Expand macro recursively |
-| rust-analyzer.explainError | Explain the currently hovered error message |
-| rust-analyzer.joinLines | Join lines |
-| rust-analyzer.matchingBrace | Find matching brace |
-| rust-analyzer.memoryUsage | Memory Usage (Clears Database) |
-| rust-analyzer.moveItemUp | Move item up |
-| rust-analyzer.moveItemDown | Move item down |
-| rust-analyzer.openDocs | Open docs under cursor |
-| rust-analyzer.parentModule | Locate parent module |
-| rust-analyzer.peekTests | Peek related tests |
-| rust-analyzer.reload | Restart rust-analyzer server |
-| rust-analyzer.reloadWorkspace | Reload workspace |
-| rust-analyzer.run | List available runnables of current file and run the selected one |
-| rust-analyzer.serverVersion | Show current Rust Analyzer server version |
-| rust-analyzer.ssr | Structural Search Replace |
-| rust-analyzer.viewSyntaxTree | Show syntax tree |
-| rust-analyzer.testCurrent | Test Current |
-| rust-analyzer.install | Install latest `rust-analyzer` from [GitHub release](https://github.com/rust-lang/rust-analyzer/releases) |
-| rust-analyzer.upgrade | Download latest `rust-analyzer` from [GitHub release](https://github.com/rust-lang/rust-analyzer/releases) |
-| rust-analyzer.viewHir | View Hir |
-| rust-analyzer.viewMir | View Mir |
-| rust-analyzer.viewFileText | View File Text |
-| rust-analyzer.viewCrateGraph | View Crate Graph |
-| rust-analyzer.viewFullCrateGraph | View Crate Graph (Full) |
-| rust-analyzer.shuffleCrateGraph | Shuffle Crate Graph |
-| rust-analyzer.runFlycheck | Run flycheck |
-| rust-analyzer.cancelFlycheck | Cancel running flychecks |
-| rust-analyzer.clearFlycheck | Clear flycheck diagnostics |
-| rust-analyzer.rebuildProcMacros | Rebuild proc macros and build scripts |
-| rust-analyzer.interpretFunction | Interpret Function |
+| wgsl-analyzer.analyzerStatus | Show wgsl-analyzer status |
+| wgsl-analyzer.debug | List available runnables of current file and debug the selected one |
+| wgsl-analyzer.explainError | Explain the currently hovered error message |
+| wgsl-analyzer.joinLines | Join lines |
+| wgsl-analyzer.matchingBrace | Find matching brace |
+| wgsl-analyzer.memoryUsage | Memory Usage (Clears Database) |
+| wgsl-analyzer.moveItemUp | Move item up |
+| wgsl-analyzer.moveItemDown | Move item down |
+| wgsl-analyzer.openDocs | Open docs under cursor |
+| wgsl-analyzer.parentModule | Locate parent module |
+| wgsl-analyzer.reload | Restart wgsl-analyzer server |
+| wgsl-analyzer.reloadWorkspace | Reload workspace |
+| wgsl-analyzer.run | List available runnables of current file and run the selected one |
+| wgsl-analyzer.serverVersion | Show current wgsl-analyzer server version |
+| wgsl-analyzer.ssr | Structural Search Replace |
+| wgsl-analyzer.viewSyntaxTree | Show syntax tree |
+| wgsl-analyzer.testCurrent | Test Current |
+| wgsl-analyzer.install | Install latest `wgsl-analyzer` from [GitHub release](https://github.com/wgsl-analyzer/wgsl-analyzer/releases) |
+| wgsl-analyzer.upgrade | Download latest `wgsl-analyzer` from [GitHub release](https://github.com/wgsl-analyzer/wgsl-analyzer/releases) |
+| wgsl-analyzer.viewFileText | View File Text |
+| wgsl-analyzer.viewPackageGraph | View Package Graph |
+| wgsl-analyzer.viewFullPackageGraph | View Package Graph (Full) |
+| wgsl-analyzer.shufflePackageGraph | Shuffle Package Graph |
+| wgsl-analyzer.runFlycheck | Run flycheck |
+| wgsl-analyzer.cancelFlycheck | Cancel running flychecks |
+| wgsl-analyzer.clearFlycheck | Clear flycheck diagnostics |
+| wgsl-analyzer.interpretFunction | Interpret Function |
 
 ## License
 
-MIT
+`coc-wgsl-analyzer` is primarily distributed under the terms of both the MIT
+license and the Apache License (Version 2.0).
+
+See [LICENSE-APACHE](/LICENSE-APACHE) and [LICENSE-MIT](/LICENSE-MIT) for details.
 
 ---
 

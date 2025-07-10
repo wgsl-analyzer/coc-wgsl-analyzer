@@ -22,15 +22,15 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import readline from 'node:readline';
 import { CodeActionResolveRequest, TextDocumentEdit } from 'vscode-languageserver-protocol';
-import { type Cmd, type Ctx, isCargoTomlDocument, isRustDocument } from './ctx';
-import * as ra from './lsp_ext';
+import { type Cmd, type Ctx, isWebbyTomlDocument, isWgslDocument } from './ctx';
+import * as wa from './lsp_ext';
 
 let terminal: Terminal | undefined;
 
 class RunnableQuickPick {
   label: string;
 
-  constructor(public runnable: ra.Runnable) {
+  constructor(public runnable: wa.Runnable) {
     this.label = runnable.label;
   }
 }
@@ -41,45 +41,36 @@ function isInRange(range: Range, position: Position): boolean {
   return lineWithin && charWithin;
 }
 
-function codeFormat(expanded: ra.ExpandedMacro): string {
-  let result = `// Recursive expansion of ${expanded.name}! macro\n`;
-  result += `// ${'='.repeat(result.length - 3)}`;
-  result += '\n\n';
-  result += expanded.expansion;
-
-  return result;
-}
-
 function countLines(text: string): number {
   return (text.match(/\n/g) || []).length;
 }
 
 export function reload(ctx: Ctx): Cmd {
   return async () => {
-    window.showInformationMessage('Reloading rust-analyzer...');
+    window.showInformationMessage('Reloading wgsl-analyzer...');
 
     await ctx.client.stop();
     await ctx.client.start();
 
-    window.showInformationMessage('Reloaded rust-analyzer');
+    window.showInformationMessage('Reloaded wgsl-analyzer');
   };
 }
 
 export function analyzerStatus(ctx: Ctx): Cmd {
   return async () => {
     const { document } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
-    const params: ra.AnalyzerStatusParams = {
+    if (!isWgslDocument(document)) return;
+    const params: wa.AnalyzerStatusParams = {
       textDocument: { uri: document.uri },
     };
-    const ret = await ctx.client.sendRequest(ra.analyzerStatus, params);
+    const ret = await ctx.client.sendRequest(wa.analyzerStatus, params);
     window.echoLines(ret.split('\n'));
   };
 }
 
 export function memoryUsage(ctx: Ctx): Cmd {
   return async () => {
-    const ret = await ctx.client.sendRequest(ra.memoryUsage);
+    const ret = await ctx.client.sendRequest(wa.memoryUsage);
     window.echoLines(ret.split('\n'));
   };
 }
@@ -87,14 +78,14 @@ export function memoryUsage(ctx: Ctx): Cmd {
 export function matchingBrace(ctx: Ctx): Cmd {
   return async () => {
     const { document, position } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
+    if (!isWgslDocument(document)) return;
 
-    const params: ra.MatchingBraceParams = {
+    const params: wa.MatchingBraceParams = {
       textDocument: { uri: document.uri },
       positions: [position],
     };
 
-    const response = await ctx.client.sendRequest(ra.matchingBrace, params);
+    const response = await ctx.client.sendRequest(wa.matchingBrace, params);
     if (response.length > 0) {
       workspace.jumpTo(document.uri, response[0]);
     }
@@ -104,7 +95,7 @@ export function matchingBrace(ctx: Ctx): Cmd {
 export function joinLines(ctx: Ctx): Cmd {
   return async () => {
     const doc = await workspace.document;
-    if (!isRustDocument(doc.textDocument)) return;
+    if (!isWgslDocument(doc.textDocument)) return;
 
     let range: Range | null = null;
     const mode = (await workspace.nvim.call('visualmode')) as string;
@@ -113,11 +104,11 @@ export function joinLines(ctx: Ctx): Cmd {
       const state = await workspace.getCurrentState();
       range = Range.create(state.position, state.position);
     }
-    const param: ra.JoinLinesParams = {
+    const param: wa.JoinLinesParams = {
       textDocument: { uri: doc.uri },
       ranges: [range],
     };
-    const items = await ctx.client.sendRequest(ra.joinLines, param);
+    const items = await ctx.client.sendRequest(wa.joinLines, param);
     await doc.applyEdits(items);
   };
 }
@@ -125,14 +116,14 @@ export function joinLines(ctx: Ctx): Cmd {
 export function parentModule(ctx: Ctx): Cmd {
   return async () => {
     const { document, position } = await workspace.getCurrentState();
-    if (!(isRustDocument(document) || isCargoTomlDocument(document))) return;
+    if (!(isWgslDocument(document) || isWebbyTomlDocument(document))) return;
 
     const param: TextDocumentPositionParams = {
       textDocument: { uri: document.uri },
       position,
     };
 
-    const locations = await ctx.client.sendRequest(ra.parentModule, param);
+    const locations = await ctx.client.sendRequest(wa.parentModule, param);
     if (!locations) return;
 
     if (locations.length === 1) {
@@ -171,7 +162,7 @@ export function ssr(ctx: Ctx): Cmd {
     }
 
     const { document, position } = await workspace.getCurrentState();
-    const param: ra.SsrParams = {
+    const param: wa.SsrParams = {
       query: input,
       parseOnly: false,
       textDocument: { uri: document.uri },
@@ -180,7 +171,7 @@ export function ssr(ctx: Ctx): Cmd {
     };
 
     window.withProgress({ title: 'Structured search replacing...', cancellable: false }, async () => {
-      const edit = await ctx.client.sendRequest(ra.ssr, param);
+      const edit = await ctx.client.sendRequest(wa.ssr, param);
       await workspace.applyEdit(edit);
     });
   };
@@ -190,7 +181,7 @@ export function serverVersion(ctx: Ctx): Cmd {
   return async () => {
     const bin = ctx.resolveBin();
     if (!bin) {
-      const msg = 'Rust Analyzer is not found';
+      const msg = 'wgsl-analyzer is not found';
       window.showErrorMessage(msg);
       return;
     }
@@ -200,21 +191,21 @@ export function serverVersion(ctx: Ctx): Cmd {
   };
 }
 
-async function fetchRunnable(ctx: Ctx): Promise<ra.Runnable[]> {
+async function fetchRunnable(ctx: Ctx): Promise<wa.Runnable[]> {
   const { document, position } = await workspace.getCurrentState();
-  if (!isRustDocument(document)) return [];
+  if (!isWgslDocument(document)) return [];
 
   window.showInformationMessage('Fetching runnable...');
 
-  const params: ra.RunnablesParams = {
+  const params: wa.RunnablesParams = {
     textDocument: { uri: document.uri },
     position,
   };
 
-  return await ctx.client.sendRequest(ra.runnables, params);
+  return await ctx.client.sendRequest(wa.runnables, params);
 }
 
-async function pickRunnable(ctx: Ctx): Promise<ra.Runnable | undefined> {
+async function pickRunnable(ctx: Ctx): Promise<wa.Runnable | undefined> {
   const runnables = await fetchRunnable(ctx);
   if (!runnables.length) return;
 
@@ -246,7 +237,7 @@ export function testCurrent(ctx: Ctx): Cmd {
       return;
     }
 
-    const testRunnable = runnables.find((run) => run.label.startsWith('cargo test'));
+    const testRunnable = runnables.find((run) => run.label.startsWith('webby test'));
     if (!testRunnable) return;
 
     await runSingle(ctx)(testRunnable);
@@ -263,14 +254,14 @@ export function debug(ctx: Ctx): Cmd {
 }
 
 export function debugSingle(ctx: Ctx): Cmd {
-  return async (runnable: ra.Runnable) => {
+  return async (runnable: wa.Runnable) => {
     const { document } = await workspace.getCurrentState();
-    if (!runnable || !isRustDocument(document)) return;
+    if (!runnable || !isWgslDocument(document)) return;
 
     let args: string[] = [];
-    if (runnable.kind === 'cargo') {
-      // TODO: runnable.args.overrideCargo?
-      args = [...runnable.args.cargoArgs];
+    if (runnable.kind === 'webby') {
+      // TODO: runnable.args.overrideWebby?
+      args = [...runnable.args.webbyArgs];
       if (runnable.args.executableArgs.length > 0) {
         runnable.args['executableArgs'][0] = `'${runnable.args['executableArgs'][0]}'`;
         args.push('--', ...runnable.args.executableArgs);
@@ -292,15 +283,15 @@ export function debugSingle(ctx: Ctx): Cmd {
     args.push('--message-format=json');
 
     console.debug(`${runnable.kind} ${args}`);
-    // We can extract a list of generated executables from the output of cargo,
+    // We can extract a list of generated executables from the output of webby,
     // but if multiple executables are generated we need a way to find out which
     // one should be used for debugging.
-    // From the arguments given to cargo, we can infer the kind and name of the executable
+    // From the arguments given to webby, we can infer the kind and name of the executable
     // and filter the list of executables accordingly.
     let expectedKind: string | undefined;
     let expectedName: string | undefined;
-    const cargoArgs = runnable.kind === 'cargo' ? runnable.args.cargoArgs : [];
-    for (const arg of cargoArgs) {
+    const webbyArgs = runnable.kind === 'webby' ? runnable.args.webbyArgs : [];
+    for (const arg of webbyArgs) {
       // Find the argument indicating the kind of the executable.
       if (expectedKind === undefined) {
         switch (arg) {
@@ -336,7 +327,7 @@ export function debugSingle(ctx: Ctx): Cmd {
     // --package argument we can get the name of the executable from it.
     if (expectedName === undefined) {
       let foundPackageArgument = false;
-      for (const arg of cargoArgs) {
+      for (const arg of webbyArgs) {
         if (foundPackageArgument) {
           expectedName = arg;
           break;
@@ -376,35 +367,35 @@ export function debugSingle(ctx: Ctx): Cmd {
         continue;
       }
 
-      let cargoMessage = {};
+      let webbyMessage = {};
       try {
-        cargoMessage = JSON.parse(line);
+        webbyMessage = JSON.parse(line);
       } catch (e) {
         console.error(e);
         continue;
       }
 
-      if (!cargoMessage) {
-        console.debug(`Skipping cargo message: ${cargoMessage}`);
+      if (!webbyMessage) {
+        console.debug(`Skipping webby message: ${webbyMessage}`);
       }
 
-      if (cargoMessage['reason'] !== 'compiler-artifact') {
-        console.debug(`Not artifact: ${cargoMessage['reason']}`);
+      if (webbyMessage['reason'] !== 'compiler-artifact') {
+        console.debug(`Not artifact: ${webbyMessage['reason']}`);
         continue;
       }
 
-      if (expectedKind !== undefined && !cargoMessage['target']['kind'].includes(expectedKind)) {
-        console.debug(`Wrong kind: ${cargoMessage['target']['kind']}, expected ${expectedKind}`);
+      if (expectedKind !== undefined && !webbyMessage['target']['kind'].includes(expectedKind)) {
+        console.debug(`Wrong kind: ${webbyMessage['target']['kind']}, expected ${expectedKind}`);
         continue;
       }
 
-      if (expectedName !== undefined && cargoMessage['target']['name'] !== expectedName) {
-        console.debug(`Wrong name: ${cargoMessage['target']['name']}, expected ${expectedName}`);
+      if (expectedName !== undefined && webbyMessage['target']['name'] !== expectedName) {
+        console.debug(`Wrong name: ${webbyMessage['target']['name']}, expected ${expectedName}`);
         continue;
       }
 
-      if (cargoMessage['executable']) {
-        executable = cargoMessage['executable'];
+      if (webbyMessage['executable']) {
+        executable = webbyMessage['executable'];
         break;
       }
     }
@@ -413,7 +404,7 @@ export function debugSingle(ctx: Ctx): Cmd {
       throw new Error('Could not find executable');
     }
 
-    const executableArgs = runnable.kind === 'cargo' ? runnable.args.executableArgs.join(' ') : '';
+    const executableArgs = runnable.kind === 'webby' ? runnable.args.executableArgs.join(' ') : '';
 
     console.info(`Debugging executable: ${executable} ${executableArgs}`);
 
@@ -447,14 +438,14 @@ export function debugSingle(ctx: Ctx): Cmd {
 }
 
 export function runSingle(ctx: Ctx): Cmd {
-  return async (runnable: ra.Runnable) => {
+  return async (runnable: wa.Runnable) => {
     const { document } = await workspace.getCurrentState();
-    if (!runnable || !isRustDocument(document)) return;
+    if (!runnable || !isWgslDocument(document)) return;
 
     let args: string[] = [];
-    if (runnable.kind === 'cargo') {
-      // TODO: runnable.args.overrideCargo?
-      args = [...runnable.args.cargoArgs];
+    if (runnable.kind === 'webby') {
+      // TODO: runnable.args.overrideWebby?
+      args = [...runnable.args.webbyArgs];
       if (runnable.args.executableArgs.length > 0) {
         runnable.args['executableArgs'][0] = `'${runnable.args['executableArgs'][0]}'`;
         args.push('--', ...runnable.args.executableArgs);
@@ -483,17 +474,17 @@ export function runSingle(ctx: Ctx): Cmd {
 export function viewSyntaxTree(ctx: Ctx): Cmd {
   return async () => {
     const doc = await workspace.document;
-    if (!isRustDocument(doc.textDocument)) return;
+    if (!isWgslDocument(doc.textDocument)) return;
 
     const mode = await workspace.nvim.call('visualmode');
     let range: Range | null = null;
     if (mode) range = await window.getSelectedRange(mode);
-    const param: ra.SyntaxTreeParams = {
+    const param: wa.SyntaxTreeParams = {
       textDocument: { uri: doc.uri },
       range,
     };
 
-    const ret = await ctx.client.sendRequest(ra.viewSyntaxTree, param);
+    const ret = await ctx.client.sendRequest(wa.viewSyntaxTree, param);
     if (!ret) return;
     const nvim = workspace.nvim;
     nvim.pauseNotification();
@@ -505,44 +496,19 @@ export function viewSyntaxTree(ctx: Ctx): Cmd {
   };
 }
 
-export function expandMacro(ctx: Ctx): Cmd {
-  return async () => {
-    const { document, position } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
-
-    const param: TextDocumentPositionParams = {
-      textDocument: { uri: document.uri },
-      position,
-    };
-
-    const expanded = await ctx.client.sendRequest(ra.expandMacro, param);
-    if (!expanded) return;
-
-    const lines = codeFormat(expanded).split('\n');
-    const nvim = workspace.nvim;
-    nvim.pauseNotification();
-    nvim.command('edit +setl\\ buftype=nofile [Macro]', true);
-    nvim.command('setl nobuflisted bufhidden=wipe', true);
-    nvim.command('setl filetype=rust', true);
-    nvim.call('append', [0, lines], true);
-    nvim.command('exe 1', true);
-    await nvim.resumeNotification(true);
-  };
-}
-
 export function explainError(ctx: Ctx): Cmd {
   return async () => {
     const { document, position } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
+    if (!isWgslDocument(document)) return;
 
     const diag = ctx.client.diagnostics?.get(document.uri)?.find((diagnostic) => isInRange(diagnostic.range, position));
     if (diag?.code) {
-      const explanation = spawnSync('rustc', ['--explain', `${diag.code}`], { encoding: 'utf-8' }).stdout.toString();
+      const explanation = spawnSync('wgpu', ['--explain', `${diag.code}`], { encoding: 'utf-8' }).stdout.toString();
 
       const docs: Documentation[] = [];
       let isCode = false;
       for (const part of explanation.split('```\n')) {
-        docs.push({ content: part, filetype: isCode ? 'rust' : 'markdown' });
+        docs.push({ content: part, filetype: isCode ? 'wgsl' : 'markdown' });
         isCode = !isCode;
       }
 
@@ -554,7 +520,7 @@ export function explainError(ctx: Ctx): Cmd {
 
 export function reloadWorkspace(ctx: Ctx): Cmd {
   return async () => {
-    await ctx.client?.sendRequest(ra.reloadWorkspace);
+    await ctx.client?.sendRequest(wa.reloadWorkspace);
   };
 }
 
@@ -629,21 +595,21 @@ export function applySnippetWorkspaceEditCommand(): Cmd {
 export function runFlycheck(ctx: Ctx): Cmd {
   return async () => {
     const { document } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
+    if (!isWgslDocument(document)) return;
 
-    ctx.client.sendNotification(ra.runFlycheck, { textDocument: { uri: document.uri } });
+    ctx.client.sendNotification(wa.runFlycheck, { textDocument: { uri: document.uri } });
   };
 }
 
 export function cancelFlycheck(ctx: Ctx): Cmd {
   return async () => {
-    ctx.client.sendNotification(ra.cancelFlycheck);
+    ctx.client.sendNotification(wa.cancelFlycheck);
   };
 }
 
 export function clearFlycheck(ctx: Ctx): Cmd {
   return async () => {
-    ctx.client.sendNotification(ra.clearFlycheck);
+    ctx.client.sendNotification(wa.clearFlycheck);
   };
 }
 
@@ -664,13 +630,13 @@ export function resolveCodeAction(ctx: Ctx): Cmd {
 export function openDocs(ctx: Ctx): Cmd {
   return async () => {
     const { document, position } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
+    if (!isWgslDocument(document)) return;
 
     const param: TextDocumentPositionParams = {
       textDocument: { uri: document.uri },
       position,
     };
-    const doclink = await ctx.client.sendRequest(ra.openDocs, param);
+    const doclink = await ctx.client.sendRequest(wa.openDocs, param);
     if (doclink) {
       if (doclink.local) {
         const exist = existsSync(Uri.parse(doclink.local).fsPath);
@@ -686,12 +652,12 @@ export function openDocs(ctx: Ctx): Cmd {
   };
 }
 
-export function openCargoToml(ctx: Ctx): Cmd {
+export function openWebbyToml(ctx: Ctx): Cmd {
   return async () => {
     const { document } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
+    if (!isWgslDocument(document)) return;
 
-    const location = await ctx.client.sendRequest(ra.openCargoToml, {
+    const location = await ctx.client.sendRequest(wa.openWebbyToml, {
       textDocument: { uri: document.uri },
     });
     if (!location) return;
@@ -700,46 +666,16 @@ export function openCargoToml(ctx: Ctx): Cmd {
   };
 }
 
-function viewXir(ctx: Ctx, xir: 'HIR' | 'MIR'): Cmd {
-  return async () => {
-    const { document, position } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
-
-    const param: TextDocumentPositionParams = {
-      textDocument: { uri: document.uri },
-      position,
-    };
-    const req = xir === 'HIR' ? ra.viewHir : ra.viewMir;
-    const ret = await ctx.client.sendRequest(req, param);
-    if (!ret) return;
-    const nvim = workspace.nvim;
-    nvim.pauseNotification();
-    nvim.command(`edit +setl\\ buftype=nofile [${xir}]`, true);
-    nvim.command('setl nobuflisted bufhidden=wipe', true);
-    nvim.call('append', [0, ret.split('\n')], true);
-    nvim.command('exe 1', true);
-    await nvim.resumeNotification(true);
-  };
-}
-
-export function viewHir(ctx: Ctx): Cmd {
-  return viewXir(ctx, 'HIR');
-}
-
-export function viewMir(ctx: Ctx): Cmd {
-  return viewXir(ctx, 'MIR');
-}
-
 export function interpretFunction(ctx: Ctx): Cmd {
   return async () => {
     const { document, position } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
+    if (!isWgslDocument(document)) return;
 
     const param: TextDocumentPositionParams = {
       textDocument: { uri: document.uri },
       position,
     };
-    const ret = await ctx.client.sendRequest(ra.interpretFunction, param);
+    const ret = await ctx.client.sendRequest(wa.interpretFunction, param);
     if (!ret) return;
     const nvim = workspace.nvim;
     nvim.pauseNotification();
@@ -754,9 +690,9 @@ export function interpretFunction(ctx: Ctx): Cmd {
 export function viewFileText(ctx: Ctx): Cmd {
   return async () => {
     const { document } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
+    if (!isWgslDocument(document)) return;
 
-    const ret = await ctx.client.sendRequest(ra.viewFileText, { uri: document.uri });
+    const ret = await ctx.client.sendRequest(wa.viewFileText, { uri: document.uri });
     if (!ret) return;
 
     const nvim = workspace.nvim;
@@ -775,9 +711,9 @@ export function echoRunCommandLine(ctx: Ctx) {
     if (!runnable) return;
 
     let args: string[] = [];
-    if (runnable.kind === 'cargo') {
-      // TODO: runnable.args.overrideCargo?
-      args = [...runnable.args.cargoArgs];
+    if (runnable.kind === 'webby') {
+      // TODO: runnable.args.overrideWebby?
+      args = [...runnable.args.webbyArgs];
       if (runnable.args.executableArgs.length > 0) {
         runnable.args['executableArgs'][0] = `'${runnable.args['executableArgs'][0]}'`;
         args.push('--', ...runnable.args.executableArgs);
@@ -785,7 +721,7 @@ export function echoRunCommandLine(ctx: Ctx) {
     } else {
       args = [...runnable.args.args];
     }
-    const commandLine = ['cargo', ...args].join(' ');
+    const commandLine = ['webby', ...args].join(' ');
     window.echoLines([commandLine]);
   };
 }
@@ -793,9 +729,9 @@ export function echoRunCommandLine(ctx: Ctx) {
 export function peekTests(ctx: Ctx): Cmd {
   return async () => {
     const { document, position } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
+    if (!isWgslDocument(document)) return;
 
-    const tests = await ctx.client.sendRequest(ra.relatedTests, {
+    const tests = await ctx.client.sendRequest(wa.relatedTests, {
       textDocument: { uri: document.uri },
       position,
     });
@@ -806,21 +742,21 @@ export function peekTests(ctx: Ctx): Cmd {
   };
 }
 
-function moveItem(ctx: Ctx, direction: ra.Direction): Cmd {
+function moveItem(ctx: Ctx, direction: wa.Direction): Cmd {
   return async () => {
     const { document, position } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
+    if (!isWgslDocument(document)) return;
 
     let range: Range | null = null;
     const mode = (await workspace.nvim.call('visualmode')) as string;
     if (mode) range = await window.getSelectedRange(mode);
     if (!range) range = Range.create(position, position);
-    const params: ra.MoveItemParams = {
+    const params: wa.MoveItemParams = {
       direction,
       textDocument: { uri: document.uri },
       range,
     };
-    const edits = await ctx.client.sendRequest(ra.moveItem, params);
+    const edits = await ctx.client.sendRequest(wa.moveItem, params);
     if (!edits?.length) return;
 
     const wsEdit: WorkspaceEdit = {
@@ -838,9 +774,9 @@ export function moveItemDown(ctx: Ctx): Cmd {
   return moveItem(ctx, 'Down');
 }
 
-function crateGraph(ctx: Ctx, full: boolean): Cmd {
+function packageGraph(ctx: Ctx, full: boolean): Cmd {
   return async () => {
-    const dot = await ctx.client.sendRequest(ra.viewCrateGraph, { full });
+    const dot = await ctx.client.sendRequest(wa.viewPackageGraph, { full });
     const html = `
 <!DOCTYPE html>
 <meta charset="utf-8">
@@ -903,37 +839,37 @@ function crateGraph(ctx: Ctx, full: boolean): Cmd {
 
     const tempFile = join(tmpdir(), `${randomBytes(5).toString('hex')}.html`);
     writeFileSync(tempFile, html, { encoding: 'utf-8' });
-    window.showMessage(`Crate Graph: ${tempFile}`);
+    window.showMessage(`Package Graph: ${tempFile}`);
     await workspace.nvim.call('coc#ui#open_url', [tempFile]);
   };
 }
 
-export function viewCrateGraph(ctx: Ctx): Cmd {
-  return crateGraph(ctx, false);
+export function viewPackageGraph(ctx: Ctx): Cmd {
+  return packageGraph(ctx, false);
 }
 
-export function viewFullCrateGraph(ctx: Ctx): Cmd {
-  return crateGraph(ctx, true);
+export function viewFullPackageGraph(ctx: Ctx): Cmd {
+  return packageGraph(ctx, true);
 }
 
-export function shuffleCrateGraph(ctx: Ctx): Cmd {
+export function shufflePackageGraph(ctx: Ctx): Cmd {
   return async () => {
     const { document } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
+    if (!isWgslDocument(document)) return;
 
-    await ctx.client.sendRequest(ra.shuffleCrateGraph);
+    await ctx.client.sendRequest(wa.shufflePackageGraph);
   };
 }
 
 export function viewItemTree(ctx: Ctx): Cmd {
   return async () => {
     const { document } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
+    if (!isWgslDocument(document)) return;
 
-    const param: ra.ViewItemTreeParams = {
+    const param: wa.ViewItemTreeParams = {
       textDocument: { uri: document.uri },
     };
-    const ret = await ctx.client.sendRequest(ra.viewItemTree, param);
+    const ret = await ctx.client.sendRequest(wa.viewItemTree, param);
     if (!ret) return;
     const nvim = workspace.nvim;
     nvim.pauseNotification();
@@ -942,14 +878,5 @@ export function viewItemTree(ctx: Ctx): Cmd {
     nvim.call('append', [0, ret.split('\n')], true);
     nvim.command('exe 1', true);
     await nvim.resumeNotification(true);
-  };
-}
-
-export function rebuildProcMacros(ctx: Ctx): Cmd {
-  return async () => {
-    const { document } = await workspace.getCurrentState();
-    if (!isRustDocument(document)) return;
-
-    await ctx.client.sendRequest(ra.rebuildProcMacros);
   };
 }

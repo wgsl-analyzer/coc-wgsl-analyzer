@@ -1,8 +1,7 @@
 {
-  "name": "coc-rust-analyzer",
+  "name": "coc-wgsl-analyzer",
   "version": "0.82.1",
-  "description": "rust-analyzer for Vim/Neovim, works as an extension with coc.nvim",
-  "author": "Heyward Fann <fannheyward@gmail.com>",
+  "description": "wgsl-analyzer for Vim/Neovim, works as an extension with coc.nvim",
   "license": "MIT",
   "main": "lib/index.js",
   "keywords": [
@@ -10,35 +9,43 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/fannheyward/coc-rust-analyzer.git"
+    "url": "git+https://github.com/wgsl-analyzer/coc-wgsl-analyzer.git"
   },
   "engines": {
     "coc": "^0.0.80"
   },
   "activationEvents": [
-    "onLanguage:rust"
+    "onLanguage:wgsl",
+    "onLanguage:wesl",
+    "workspaceContains:wesl.toml",
+    "workspaceContains:*/wesl.toml",
+    "workspaceContains:wgsl-project.json",
+    "workspaceContains:*/wgsl-project.json",
+    "workspaceContains:.wgsl-project.json",
+    "workspaceContains:*/.wgsl-project.json"
   ],
   "scripts": {
     "check": "biome check src",
+    "format": "biome format --write",
     "schema": "node ./generate-config-schema.js",
     "build": "node esbuild.mjs",
     "watch": "node esbuild.mjs --watch",
     "prepare": "node esbuild.mjs"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.0.0",
+    "@biomejs/biome": "^2.1.1",
     "@types/adm-zip": "^0.5.7",
-    "@types/node": "16",
-    "@types/node-fetch": "2.6.12",
+    "@types/node": "^16.18.126",
+    "@types/node-fetch": "^3.0.2",
     "@types/which": "^3.0.4",
-    "adm-zip": "0.5.12",
-    "coc.nvim": "^0.0.83-next.18",
-    "esbuild": "^0.25.5",
+    "adm-zip": "^0.5.16",
+    "coc.nvim": "^0.0.83-next.24",
+    "esbuild": "^0.25.6",
     "https-proxy-agent": "^7.0.6",
-    "node-fetch": "2.6.7",
+    "node-fetch": "^3.3.2",
     "typescript": "^5.8.3",
     "vscode-languageserver-protocol": "^3.17.5",
-    "which": "^4.0.0"
+    "which": "^5.0.0"
   },
   "prettier": {
     "singleQuote": true,
@@ -48,48 +55,48 @@
   "contributes": {
     "rootPatterns": [
       {
-        "filetype": "rust",
+        "filetype": "wgsl",
         "patterns": [
-          "Cargo.toml",
-          "rust-project.json"
+          "wesl.toml",
+          "wgsl-project.json"
         ]
       }
     ],
     "jsonValidation": [
       {
-        "fileMatch": "rust-project.json",
-        "url": "https://json.schemastore.org/rust-project.json"
+        "fileMatch": "wgsl-project.json",
+        "url": "https://json.schemastore.org/wgsl-project.json"
       },
       {
-        "fileMatch": ".rust-project.json",
-        "url": "https://json.schemastore.org/rust-project.json"
+        "fileMatch": ".wgsl-project.json",
+        "url": "https://json.schemastore.org/wgsl-project.json"
       }
     ],
     "configuration": {
       "type": "object",
-      "title": "coc-rust-analyzer configuration",
+      "title": "coc-wgsl-analyzer configuration",
       "properties": {
-        "rust-analyzer.enable": {
+        "wgsl-analyzer.enable": {
           "type": "boolean",
-          "markdownDescription": "Enable `coc-rust-analyzer`",
+          "markdownDescription": "Enable `coc-wgsl-analyzer`",
           "default": true
         },
-        "rust-analyzer.disableProgressNotifications": {
+        "wgsl-analyzer.disableProgressNotifications": {
           "type": "boolean",
           "default": false,
           "markdownDescription": "Disable initialization and workdone progress notifications"
         },
-        "rust-analyzer.disablePullDiagnostic": {
+        "wgsl-analyzer.disablePullDiagnostic": {
           "type": "boolean",
           "default": true,
           "markdownDescription": "Disable pullDiagnostic feature"
         },
-        "rust-analyzer.terminal.startinsert": {
+        "wgsl-analyzer.terminal.startinsert": {
           "type": "boolean",
           "default": false,
           "markdownDescription": "Enter insert mode after terminal displayed"
         },
-        "rust-analyzer.debug.runtime": {
+        "wgsl-analyzer.debug.runtime": {
           "type": "string",
           "default": "termdebug",
           "enum": [
@@ -104,38 +111,38 @@
             "`\"nvim-dap\"` use nvim-dap plugin"
           ]
         },
-        "rust-analyzer.debug.vimspector.configuration.name": {
+        "wgsl-analyzer.debug.vimspector.configuration.name": {
           "type": "string",
           "default": "launch",
           "markdownDescription": "Specify the name of the vimspector configuration name. The following args will be passed to the configuration: `Executable` and `Args` (both strings)"
         },
-        "rust-analyzer.debug.nvimdap.configuration.template": {
+        "wgsl-analyzer.debug.nvimdap.configuration.template": {
           "type": "string",
           "default": "",
           "markdownDescription": "Configuration template used to invoked dap.run([conf](https://github.com/mfussenegger/nvim-dap/blob/0e6b7c47dd70e80793ed39271b2aa712d9366dbc/doc/dap.txt#L656C2-L656C2)). The template will be instantiate like thie: `$exe` will be replaced with executable path, `$args` will be replaced with arguments."
         },
-        "rust-analyzer.server.path": {
+        "wgsl-analyzer.server.path": {
           "type": [
             "null",
             "string"
           ],
           "default": null,
-          "markdownDescription": "Path to rust-analyzer executable (points to bundled binary by default). If this is set, then \"rust-analyzer.updates.channel\" setting is not used"
+          "markdownDescription": "Path to wgsl-analyzer executable (points to bundled binary by default). If this is set, then \"wgsl-analyzer.updates.channel\" setting is not used"
         },
-        "rust-analyzer.server.extraEnv": {
+        "wgsl-analyzer.server.extraEnv": {
           "type": [
             "null",
             "object"
           ],
           "default": null,
-          "markdownDescription": "Extra environment variables that will be passed to the rust-analyzer executable. Useful for passing e.g. `RA_LOG` for debugging."
+          "markdownDescription": "Extra environment variables that will be passed to the wgsl-analyzer executable. Useful for passing e.g. `RA_LOG` for debugging."
         },
-        "rust-analyzer.restartServerOnConfigChange": {
+        "wgsl-analyzer.restartServerOnConfigChange": {
           "markdownDescription": "Whether to restart the server automatically when certain settings that require a restart are changed.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.trace.server": {
+        "wgsl-analyzer.trace.server": {
           "type": "string",
           "scope": "window",
           "enum": [
@@ -149,9 +156,9 @@
             "Full log"
           ],
           "default": "off",
-          "markdownDescription": "Trace requests to the rust-analyzer"
+          "markdownDescription": "Trace requests to the wgsl-analyzer"
         },
-        "rust-analyzer.updates.prompt": {
+        "wgsl-analyzer.updates.prompt": {
           "type": [
             "boolean",
             "string"
@@ -162,32 +169,32 @@
             "neverDownload"
           ],
           "default": true,
-          "markdownDescription": "Prompt the user before downloading rust-analyzer"
+          "markdownDescription": "Prompt the user before downloading wgsl-analyzer"
         },
-        "rust-analyzer.updates.checkOnStartup": {
+        "wgsl-analyzer.updates.checkOnStartup": {
           "type": "boolean",
           "default": true,
-          "markdownDescription": "Auto-check rust-analyzer updates on startup"
+          "markdownDescription": "Auto-check wgsl-analyzer updates on startup"
         },
-        "rust-analyzer.updates.channel": {
+        "wgsl-analyzer.updates.channel": {
           "type": "string",
           "default": "stable",
           "enum": [
             "stable",
             "nightly"
           ],
-          "markdownDescription": "Choose `\"nightly\"` updates to get the latest features and bug fixes every day. While `\"stable\"` releases occur weekly and don't contain cutting-edge features from VSCode proposed APIs",
+          "markdownDescription": "Choose `\"nightly\"` updates to get the latest features and bug fixes every day. While `\"stable\"` releases occur weekly and don't contain cutting-edge features from VS Code proposed APIs",
           "enumDescriptions": [
-            "`\"stable\"` updates are shipped weekly, they don't contain cutting-edge features from VSCode proposed APIs but have less bugs in general",
-            "`\"nightly\"` updates are shipped daily (extension updates automatically by downloading artifacts directly from GitHub), they contain cutting-edge features and latest bug fixes. These releases help us get your feedback very quickly and speed up rust-analyzer development **drastically**"
+            "`\"stable\"` updates are shipped weekly, they don't contain cutting-edge features from VS Code proposed APIs but have less bugs in general",
+            "`\"nightly\"` updates are shipped daily (extension updates automatically by downloading artifacts directly from GitHub), they contain cutting-edge features and latest bug fixes. These releases help us get your feedback very quickly and speed up wgsl-analyzer development **drastically**"
           ]
         },
-        "rust-analyzer.assist.emitMustUse": {
+        "wgsl-analyzer.assist.emitMustUse": {
           "markdownDescription": "Whether to insert #[must_use] when generating `as_` methods\nfor enum variants.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.assist.expressionFillDefault": {
+        "wgsl-analyzer.assist.expressionFillDefault": {
           "markdownDescription": "Placeholder expression to use for missing expressions in assists.",
           "default": "todo",
           "type": "string",
@@ -196,32 +203,22 @@
             "default"
           ],
           "enumDescriptions": [
-            "Fill missing expressions with the `todo` macro",
-            "Fill missing expressions with reasonable defaults, `new` or `default` constructors."
+            "Fill missing expressions with a `todo` comment.",
+            "Fill missing expressions with reasonable defaults."
           ]
         },
-        "rust-analyzer.assist.preferSelf": {
-          "markdownDescription": "When inserting a type (e.g. in \"fill match arms\" assist), prefer to use `Self` over the type name where possible.",
-          "default": false,
-          "type": "boolean"
-        },
-        "rust-analyzer.assist.termSearch.borrowcheck": {
-          "markdownDescription": "Enable borrow checking for term search code assists. If set to false, also there will be more suggestions, but some of them may not borrow-check.",
-          "default": true,
-          "type": "boolean"
-        },
-        "rust-analyzer.assist.termSearch.fuel": {
+        "wgsl-analyzer.assist.termSearch.fuel": {
           "markdownDescription": "Term search fuel in \"units of work\" for assists (Defaults to 1800).",
           "default": 1800,
           "type": "integer",
           "minimum": 0
         },
-        "rust-analyzer.cachePriming.enable": {
+        "wgsl-analyzer.cachePriming.enable": {
           "markdownDescription": "Warm up caches on project load.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.cachePriming.numThreads": {
+        "wgsl-analyzer.cachePriming.numThreads": {
           "markdownDescription": "How many worker threads to handle priming caches. The default `0` means to pick automatically.",
           "default": "physical",
           "anyOf": [
@@ -243,56 +240,12 @@
             }
           ]
         },
-        "rust-analyzer.cargo.allTargets": {
-          "markdownDescription": "Pass `--all-targets` to cargo invocation.",
+        "wgsl-analyzer.wesl.autoreload": {
+          "markdownDescription": "Automatically refresh project info via `wesl metadata` on\n`wesl.toml` or `.wesl/config.toml` changes.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.cargo.autoreload": {
-          "markdownDescription": "Automatically refresh project info via `cargo metadata` on\n`Cargo.toml` or `.cargo/config.toml` changes.",
-          "default": true,
-          "type": "boolean"
-        },
-        "rust-analyzer.cargo.buildScripts.enable": {
-          "markdownDescription": "Run build scripts (`build.rs`) for more precise code analysis.",
-          "default": true,
-          "type": "boolean"
-        },
-        "rust-analyzer.cargo.buildScripts.invocationStrategy": {
-          "markdownDescription": "Specifies the invocation strategy to use when running the build scripts command.\nIf `per_workspace` is set, the command will be executed for each Rust workspace with the\nworkspace as the working directory.\nIf `once` is set, the command will be executed once with the opened project as the\nworking directory.\nThis config only has an effect when `#rust-analyzer.cargo.buildScripts.overrideCommand#`\nis set.",
-          "default": "per_workspace",
-          "type": "string",
-          "enum": [
-            "per_workspace",
-            "once"
-          ],
-          "enumDescriptions": [
-            "The command will be executed for each Rust workspace with the workspace as the working directory.",
-            "The command will be executed once with the opened project as the working directory."
-          ]
-        },
-        "rust-analyzer.cargo.buildScripts.overrideCommand": {
-          "markdownDescription": "Override the command rust-analyzer uses to run build scripts and\nbuild procedural macros. The command is required to output json\nand should therefore include `--message-format=json` or a similar\noption.\n\nIf there are multiple linked projects/workspaces, this command is invoked for\neach of them, with the working directory being the workspace root\n(i.e., the folder containing the `Cargo.toml`). This can be overwritten\nby changing `#rust-analyzer.cargo.buildScripts.invocationStrategy#`.\n\nBy default, a cargo invocation will be constructed for the configured\ntargets and features, with the following base command line:\n\n```bash\ncargo check --quiet --workspace --message-format=json --all-targets --keep-going\n```\n.",
-          "default": null,
-          "type": [
-            "null",
-            "array"
-          ],
-          "items": {
-            "type": "string"
-          }
-        },
-        "rust-analyzer.cargo.buildScripts.rebuildOnSave": {
-          "markdownDescription": "Rerun proc-macros building/build-scripts running when proc-macro\nor build-script sources change and are saved.",
-          "default": true,
-          "type": "boolean"
-        },
-        "rust-analyzer.cargo.buildScripts.useRustcWrapper": {
-          "markdownDescription": "Use `RUSTC_WRAPPER=rust-analyzer` when running build scripts to\navoid checking unnecessary things.",
-          "default": true,
-          "type": "boolean"
-        },
-        "rust-analyzer.cargo.cfgs": {
+        "wgsl-analyzer.wesl.cfgs": {
           "markdownDescription": "List of cfg options to enable with the given values.\n\nTo enable a name without a value, use `\"key\"`.\nTo enable a name with a value, use `\"key=value\"`.\nTo disable, prefix the entry with a `!`.",
           "default": [
             "debug_assertions",
@@ -303,151 +256,49 @@
             "type": "string"
           }
         },
-        "rust-analyzer.cargo.extraArgs": {
-          "markdownDescription": "Extra arguments that are passed to every cargo invocation.",
+        "wgsl-analyzer.wesl.extraArgs": {
+          "markdownDescription": "Extra arguments that are passed to every wesl invocation.",
           "default": [],
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "rust-analyzer.cargo.extraEnv": {
-          "markdownDescription": "Extra environment variables that will be set when running cargo, rustc\nor other commands within the workspace. Useful for setting RUSTFLAGS.",
+        "wgsl-analyzer.wesl.extraEnv": {
+          "markdownDescription": "Extra environment variables that will be set when running wesl, wgpu\nor other commands within the workspace. Useful for setting WGSLFLAGS.",
           "default": {},
           "type": "object"
         },
-        "rust-analyzer.cargo.features": {
-          "markdownDescription": "List of features to activate.\n\nSet this to `\"all\"` to pass `--all-features` to cargo.",
-          "default": [],
-          "anyOf": [
-            {
-              "type": "string",
-              "enum": [
-                "all"
-              ],
-              "enumDescriptions": [
-                "Pass `--all-features` to cargo"
-              ]
-            },
-            {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          ]
-        },
-        "rust-analyzer.cargo.noDefaultFeatures": {
-          "markdownDescription": "Whether to pass `--no-default-features` to cargo.",
+        "wgsl-analyzer.wesl.noDeps": {
+          "markdownDescription": "Whether to skip fetching dependencies. If set to \"true\", the analysis is performed\nentirely offline, and metadata for dependencies is not fetched.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.cargo.noDeps": {
-          "markdownDescription": "Whether to skip fetching dependencies. If set to \"true\", the analysis is performed\nentirely offline, and Cargo metadata for dependencies is not fetched.",
-          "default": false,
-          "type": "boolean"
-        },
-        "rust-analyzer.cargo.sysroot": {
-          "markdownDescription": "Relative path to the sysroot, or \"discover\" to try to automatically find it via\n\"rustc --print sysroot\".\n\nUnsetting this disables sysroot loading.\n\nThis option does not take effect until rust-analyzer is restarted.",
-          "default": "discover",
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "rust-analyzer.cargo.sysrootSrc": {
-          "markdownDescription": "Relative path to the sysroot library sources. If left unset, this will default to\n`{cargo.sysroot}/lib/rustlib/src/rust/library`.\n\nThis option does not take effect until rust-analyzer is restarted.",
-          "default": null,
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "rust-analyzer.cargo.target": {
-          "markdownDescription": "Compilation target override (target tuple).",
-          "default": null,
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "rust-analyzer.cargo.targetDir": {
-          "markdownDescription": "Optional path to a rust-analyzer specific target directory.\nThis prevents rust-analyzer's `cargo check` and initial build-script and proc-macro\nbuilding from locking the `Cargo.lock` at the expense of duplicating build artifacts.\n\nSet to `true` to use a subdirectory of the existing target directory or\nset to a path relative to the workspace to use that path.",
-          "default": null,
-          "anyOf": [
-            {
-              "type": "null"
-            },
-            {
-              "type": "boolean"
-            },
-            {
-              "type": "string"
-            }
-          ]
-        },
-        "rust-analyzer.cfg.setTest": {
-          "markdownDescription": "Set `cfg(test)` for local crates. Defaults to true.",
-          "default": true,
-          "type": "boolean"
-        },
-        "rust-analyzer.checkOnSave": {
+        "wgsl-analyzer.checkOnSave": {
           "markdownDescription": "Run the check command for diagnostics on save.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.check.allTargets": {
-          "markdownDescription": "Check all targets and tests (`--all-targets`). Defaults to\n`#rust-analyzer.cargo.allTargets#`.",
-          "default": null,
-          "type": [
-            "null",
-            "boolean"
-          ]
-        },
-        "rust-analyzer.check.command": {
-          "markdownDescription": "Cargo command to use for `cargo check`.",
+        "wgsl-analyzer.check.command": {
+          "markdownDescription": "wesl command to use for `wesl check`.",
           "default": "check",
           "type": "string"
         },
-        "rust-analyzer.check.extraArgs": {
-          "markdownDescription": "Extra arguments for `cargo check`.",
+        "wgsl-analyzer.check.extraArgs": {
+          "markdownDescription": "Extra arguments for `wesl check`.",
           "default": [],
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "rust-analyzer.check.extraEnv": {
-          "markdownDescription": "Extra environment variables that will be set when running `cargo check`.\nExtends `#rust-analyzer.cargo.extraEnv#`.",
+        "wgsl-analyzer.check.extraEnv": {
+          "markdownDescription": "Extra environment variables that will be set when running `wesl check`.\nExtends `#wgsl-analyzer.wesl.extraEnv#`.",
           "default": {},
           "type": "object"
         },
-        "rust-analyzer.check.features": {
-          "markdownDescription": "List of features to activate. Defaults to\n`#rust-analyzer.cargo.features#`.\n\nSet to `\"all\"` to pass `--all-features` to Cargo.",
-          "default": null,
-          "anyOf": [
-            {
-              "type": "string",
-              "enum": [
-                "all"
-              ],
-              "enumDescriptions": [
-                "Pass `--all-features` to cargo"
-              ]
-            },
-            {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "rust-analyzer.check.ignore": {
-          "markdownDescription": "List of `cargo check` (or other command specified in `check.command`) diagnostics to ignore.\n\nFor example for `cargo check`: `dead_code`, `unused_imports`, `unused_variables`,...",
+        "wgsl-analyzer.check.ignore": {
+          "markdownDescription": "List of `wesl check` (or other command specified in `check.command`) diagnostics to ignore.\n\nFor example for `wesl check`: `dead_code`, `unused_imports`, `unused_variables`,...",
           "default": [],
           "type": "array",
           "items": {
@@ -455,8 +306,8 @@
           },
           "uniqueItems": true
         },
-        "rust-analyzer.check.invocationStrategy": {
-          "markdownDescription": "Specifies the invocation strategy to use when running the check command.\nIf `per_workspace` is set, the command will be executed for each workspace.\nIf `once` is set, the command will be executed once.\nThis config only has an effect when `#rust-analyzer.check.overrideCommand#`\nis set.",
+        "wgsl-analyzer.check.invocationStrategy": {
+          "markdownDescription": "Specifies the invocation strategy to use when running the check command.\nIf `per_workspace` is set, the command will be executed for each workspace.\nIf `once` is set, the command will be executed once.\nThis config only has an effect when `#wgsl-analyzer.check.overrideCommand#`\nis set.",
           "default": "per_workspace",
           "type": "string",
           "enum": [
@@ -464,20 +315,12 @@
             "once"
           ],
           "enumDescriptions": [
-            "The command will be executed for each Rust workspace with the workspace as the working directory.",
+            "The command will be executed for each WGSL workspace with the workspace as the working directory.",
             "The command will be executed once with the opened project as the working directory."
           ]
         },
-        "rust-analyzer.check.noDefaultFeatures": {
-          "markdownDescription": "Whether to pass `--no-default-features` to Cargo. Defaults to\n`#rust-analyzer.cargo.noDefaultFeatures#`.",
-          "default": null,
-          "type": [
-            "null",
-            "boolean"
-          ]
-        },
-        "rust-analyzer.check.overrideCommand": {
-          "markdownDescription": "Override the command rust-analyzer uses instead of `cargo check` for\ndiagnostics on save. The command is required to output json and\nshould therefore include `--message-format=json` or a similar option\n(if your client supports the `colorDiagnosticOutput` experimental\ncapability, you can use `--message-format=json-diagnostic-rendered-ansi`).\n\nIf you're changing this because you're using some tool wrapping\nCargo, you might also want to change\n`#rust-analyzer.cargo.buildScripts.overrideCommand#`.\n\nIf there are multiple linked projects/workspaces, this command is invoked for\neach of them, with the working directory being the workspace root\n(i.e., the folder containing the `Cargo.toml`). This can be overwritten\nby changing `#rust-analyzer.check.invocationStrategy#`.\n\nIf `$saved_file` is part of the command, rust-analyzer will pass\nthe absolute path of the saved file to the provided command. This is\nintended to be used with non-Cargo build systems.\nNote that `$saved_file` is experimental and may be removed in the future.\n\nAn example command would be:\n\n```bash\ncargo check --workspace --message-format=json --all-targets\n```\n.",
+        "wgsl-analyzer.check.overrideCommand": {
+          "markdownDescription": "Override the command wgsl-analyzer uses instead of `wesl check` for\ndiagnostics on save. The command is required to output json and\nshould therefore include `--message-format=json` or a similar option\n(if your client supports the `colorDiagnosticOutput` experimental\ncapability, you can use `--message-format=json-diagnostic-rendered-ansi`).\n\nIf you're changing this because you're using some tool wrapping\nwesl-rs, you might also want to change\n`#wgsl-analyzer.wesl.buildScripts.overrideCommand#`.\n\nIf there are multiple linked projects/workspaces, this command is invoked for\neach of them, with the working directory being the workspace root\n(i.e., the folder containing the `wesl.toml`). This can be overwritten\nby changing `#wgsl-analyzer.check.invocationStrategy#`.\n\nIf `$saved_file` is part of the command, wgsl-analyzer will pass\nthe absolute path of the saved file to the provided command. This is\nintended to be used with non-wesl build systems.\nNote that `$saved_file` is experimental and may be removed in the future.\n\nAn example command would be:\n\n```bash\nwesl check --workspace --message-format=json --all-targets\n```\n.",
           "default": null,
           "type": [
             "null",
@@ -487,8 +330,8 @@
             "type": "string"
           }
         },
-        "rust-analyzer.check.targets": {
-          "markdownDescription": "Check for specific targets. Defaults to `#rust-analyzer.cargo.target#` if empty.\n\nCan be a single target, e.g. `\"x86_64-unknown-linux-gnu\"` or a list of targets, e.g.\n`[\"aarch64-apple-darwin\", \"x86_64-apple-darwin\"]`.\n\nAliased as `\"checkOnSave.targets\"`.",
+        "wgsl-analyzer.check.targets": {
+          "markdownDescription": "Check for specific targets. Defaults to `#wgsl-analyzer.wesl.target#` if empty.\n\nCan be a single target, e.g. `\"x86_64-unknown-linux-gnu\"` or a list of targets, e.g.\n`[\"aarch64-apple-darwin\", \"x86_64-apple-darwin\"]`.\n\nAliased as `\"checkOnSave.targets\"`.",
           "default": null,
           "anyOf": [
             {
@@ -505,77 +348,25 @@
             }
           ]
         },
-        "rust-analyzer.check.workspace": {
-          "markdownDescription": "Whether `--workspace` should be passed to `cargo check`.\nIf false, `-p <package>` will be passed instead if applicable. In case it is not, no\ncheck will be performed.",
+        "wgsl-analyzer.check.workspace": {
+          "markdownDescription": "Whether `--workspace` should be passed to `wesl check`.\nIf false, `-p <package>` will be passed instead if applicable. In case it is not, no\ncheck will be performed.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.completion.addSemicolonToUnit": {
-          "markdownDescription": "Whether to automatically add a semicolon when completing unit-returning functions.\n\nIn `match` arms it completes a comma instead.",
-          "default": true,
-          "type": "boolean"
-        },
-        "rust-analyzer.completion.autoAwait.enable": {
-          "markdownDescription": "Toggles the additional completions that automatically show method calls and field accesses with `await` prefixed to them when completing on a future.",
-          "default": true,
-          "type": "boolean"
-        },
-        "rust-analyzer.completion.autoIter.enable": {
-          "markdownDescription": "Toggles the additional completions that automatically show method calls with `iter()` or `into_iter()` prefixed to them when completing on a type that has them.",
-          "default": true,
-          "type": "boolean"
-        },
-        "rust-analyzer.completion.autoimport.enable": {
+        "wgsl-analyzer.completion.autoimport.enable": {
           "markdownDescription": "Toggles the additional completions that automatically add imports when completed.\nNote that your client must specify the `additionalTextEdits` LSP client capability to truly have this feature enabled.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.completion.autoimport.exclude": {
-          "markdownDescription": "A list of full paths to items to exclude from auto-importing completions.\n\nTraits in this list won't have their methods suggested in completions unless the trait\nis in scope.\n\nYou can either specify a string path which defaults to type \"always\" or use the more verbose\nform `{ \"path\": \"path::to::item\", type: \"always\" }`.\n\nFor traits the type \"methods\" can be used to only exclude the methods but not the trait itself.\n\nThis setting also inherits `#rust-analyzer.completion.excludeTraits#`.",
-          "default": [
-            {
-              "path": "core::borrow::Borrow",
-              "type": "methods"
-            },
-            {
-              "path": "core::borrow::BorrowMut",
-              "type": "methods"
-            }
-          ],
+        "wgsl-analyzer.completion.autoimport.exclude": {
+          "markdownDescription": "A list of full paths to items to exclude from auto-importing completions.",
+          "default": [],
           "type": "array",
           "items": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "path": {
-                    "type": "string"
-                  },
-                  "type": {
-                    "type": "string",
-                    "enum": [
-                      "always",
-                      "methods"
-                    ],
-                    "enumDescriptions": [
-                      "Do not show this item or its methods (if it is a trait) in auto-import completions.",
-                      "Do not show this traits methods in auto-import completions."
-                    ]
-                  }
-                }
-              }
-            ]
+            "type": "string"
           }
         },
-        "rust-analyzer.completion.autoself.enable": {
-          "markdownDescription": "Toggles the additional completions that automatically show method calls and field accesses\nwith `self` prefixed to them when inside a method.",
-          "default": true,
-          "type": "boolean"
-        },
-        "rust-analyzer.completion.callable.snippets": {
+        "wgsl-analyzer.completion.callable.snippets": {
           "markdownDescription": "Whether to add parenthesis and argument snippets when completing function.",
           "default": "fill_arguments",
           "type": "string",
@@ -590,25 +381,17 @@
             "Do no snippet completions for callables."
           ]
         },
-        "rust-analyzer.completion.excludeTraits": {
-          "markdownDescription": "A list of full paths to traits whose methods to exclude from completion.\n\nMethods from these traits won't be completed, even if the trait is in scope. However, they will still be suggested on expressions whose type is `dyn Trait`, `impl Trait` or `T where T: Trait`.\n\nNote that the trait themselves can still be completed.",
-          "default": [],
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "rust-analyzer.completion.fullFunctionSignatures.enable": {
+        "wgsl-analyzer.completion.fullFunctionSignatures.enable": {
           "markdownDescription": "Whether to show full function/method signatures in completion docs.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.completion.hideDeprecated": {
+        "wgsl-analyzer.completion.hideDeprecated": {
           "markdownDescription": "Whether to omit deprecated items from autocompletion. By default they are marked as deprecated but not hidden.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.completion.limit": {
+        "wgsl-analyzer.completion.limit": {
           "markdownDescription": "Maximum number of completions to return. If `None`, the limit is infinite.",
           "default": null,
           "type": [
@@ -617,74 +400,34 @@
           ],
           "minimum": 0
         },
-        "rust-analyzer.completion.postfix.enable": {
+        "wgsl-analyzer.completion.postfix.enable": {
           "markdownDescription": "Whether to show postfix snippets like `dbg`, `if`, `not`, etc.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.completion.privateEditable.enable": {
+        "wgsl-analyzer.completion.privateEditable.enable": {
           "markdownDescription": "Enables completions of private items and fields that are defined in the current workspace even if they are not visible at the current position.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.completion.snippets.custom": {
+        "wgsl-analyzer.completion.snippets.custom": {
           "markdownDescription": "Custom completion snippets.",
-          "default": {
-            "Ok": {
-              "postfix": "ok",
-              "body": "Ok(${receiver})",
-              "description": "Wrap the expression in a `Result::Ok`",
-              "scope": "expr"
-            },
-            "Box::pin": {
-              "postfix": "pinbox",
-              "body": "Box::pin(${receiver})",
-              "requires": "std::boxed::Box",
-              "description": "Put the expression into a pinned `Box`",
-              "scope": "expr"
-            },
-            "Arc::new": {
-              "postfix": "arc",
-              "body": "Arc::new(${receiver})",
-              "requires": "std::sync::Arc",
-              "description": "Put the expression into an `Arc`",
-              "scope": "expr"
-            },
-            "Some": {
-              "postfix": "some",
-              "body": "Some(${receiver})",
-              "description": "Wrap the expression in an `Option::Some`",
-              "scope": "expr"
-            },
-            "Err": {
-              "postfix": "err",
-              "body": "Err(${receiver})",
-              "description": "Wrap the expression in a `Result::Err`",
-              "scope": "expr"
-            },
-            "Rc::new": {
-              "postfix": "rc",
-              "body": "Rc::new(${receiver})",
-              "requires": "std::rc::Rc",
-              "description": "Put the expression into an `Rc`",
-              "scope": "expr"
-            }
-          },
+          "default": {},
           "type": "object"
         },
-        "rust-analyzer.completion.termSearch.enable": {
+        "wgsl-analyzer.completion.termSearch.enable": {
           "markdownDescription": "Whether to enable term search based snippets like `Some(foo.bar().baz())`.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.completion.termSearch.fuel": {
+        "wgsl-analyzer.completion.termSearch.fuel": {
           "markdownDescription": "Term search fuel in \"units of work\" for autocompletion (Defaults to 1000).",
           "default": 1000,
           "type": "integer",
           "minimum": 0
         },
-        "rust-analyzer.diagnostics.disabled": {
-          "markdownDescription": "List of rust-analyzer diagnostics to disable.",
+        "wgsl-analyzer.diagnostics.disabled": {
+          "markdownDescription": "List of wgsl-analyzer diagnostics to disable.",
           "default": [],
           "type": "array",
           "items": {
@@ -692,27 +435,22 @@
           },
           "uniqueItems": true
         },
-        "rust-analyzer.diagnostics.enable": {
-          "markdownDescription": "Whether to show native rust-analyzer diagnostics.",
+        "wgsl-analyzer.diagnostics.enable": {
+          "markdownDescription": "Whether to show native wgsl-analyzer diagnostics.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.diagnostics.experimental.enable": {
-          "markdownDescription": "Whether to show experimental rust-analyzer diagnostics that might\nhave more false positives than usual.",
+        "wgsl-analyzer.diagnostics.experimental.enable": {
+          "markdownDescription": "Whether to show experimental wgsl-analyzer diagnostics that might\nhave more false positives than usual.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.diagnostics.remapPrefix": {
-          "markdownDescription": "Map of prefixes to be substituted when parsing diagnostic file paths.\nThis should be the reverse mapping of what is passed to `rustc` as `--remap-path-prefix`.",
-          "default": {},
-          "type": "object"
-        },
-        "rust-analyzer.diagnostics.styleLints.enable": {
+        "wgsl-analyzer.diagnostics.styleLints.enable": {
           "markdownDescription": "Whether to run additional style lints.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.diagnostics.warningsAsHint": {
+        "wgsl-analyzer.diagnostics.warningsAsHint": {
           "markdownDescription": "List of warnings that should be displayed with hint severity.\n\nThe warnings will be indicated by faded text or three dots in code\nand will not show up in the `Problems Panel`.",
           "default": [],
           "type": "array",
@@ -720,7 +458,7 @@
             "type": "string"
           }
         },
-        "rust-analyzer.diagnostics.warningsAsInfo": {
+        "wgsl-analyzer.diagnostics.warningsAsInfo": {
           "markdownDescription": "List of warnings that should be displayed with info severity.\n\nThe warnings will be indicated by a blue squiggly underline in code\nand a blue icon in the `Problems Panel`.",
           "default": [],
           "type": "array",
@@ -728,15 +466,15 @@
             "type": "string"
           }
         },
-        "rust-analyzer.files.exclude": {
-          "markdownDescription": "These paths (file/directories) will be ignored by rust-analyzer. They are\nrelative to the workspace root, and globs are not supported. You may\nalso need to add the folders to Code's `files.watcherExclude`.",
+        "wgsl-analyzer.files.exclude": {
+          "markdownDescription": "These paths (file/directories) will be ignored by wgsl-analyzer. They are\nrelative to the workspace root, and globs are not supported. You may\nalso need to add the folders to Code's `files.watcherExclude`.",
           "default": [],
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "rust-analyzer.files.watcher": {
+        "wgsl-analyzer.files.watcher": {
           "markdownDescription": "Controls file watching implementation.",
           "default": "client",
           "type": "string",
@@ -749,62 +487,57 @@
             "Use server-side file watching"
           ]
         },
-        "rust-analyzer.highlightRelated.branchExitPoints.enable": {
+        "wgsl-analyzer.highlightRelated.branchExitPoints.enable": {
           "markdownDescription": "Enables highlighting of related return values while the cursor is on any `match`, `if`, or match arm arrow (`=>`).",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.highlightRelated.breakPoints.enable": {
+        "wgsl-analyzer.highlightRelated.breakPoints.enable": {
           "markdownDescription": "Enables highlighting of related references while the cursor is on `break`, `loop`, `while`, or `for` keywords.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.highlightRelated.closureCaptures.enable": {
-          "markdownDescription": "Enables highlighting of all captures of a closure while the cursor is on the `|` or move keyword of a closure.",
-          "default": true,
-          "type": "boolean"
-        },
-        "rust-analyzer.highlightRelated.exitPoints.enable": {
+        "wgsl-analyzer.highlightRelated.exitPoints.enable": {
           "markdownDescription": "Enables highlighting of all exit points while the cursor is on any `return`, `?`, `fn`, or return type arrow (`->`).",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.highlightRelated.references.enable": {
+        "wgsl-analyzer.highlightRelated.references.enable": {
           "markdownDescription": "Enables highlighting of related references while the cursor is on any identifier.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.highlightRelated.yieldPoints.enable": {
+        "wgsl-analyzer.highlightRelated.yieldPoints.enable": {
           "markdownDescription": "Enables highlighting of all break points for a loop or block context while the cursor is on any `async` or `await` keywords.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.hover.actions.updateTest.enable": {
-          "markdownDescription": "Whether to show `Update Test` action. Only applies when\n`#rust-analyzer.hover.actions.enable#` and `#rust-analyzer.hover.actions.run.enable#` are set.",
+        "wgsl-analyzer.hover.actions.updateTest.enable": {
+          "markdownDescription": "Whether to show `Update Test` action. Only applies when\n`#wgsl-analyzer.hover.actions.enable#` and `#wgsl-analyzer.hover.actions.run.enable#` are set.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.hover.documentation.enable": {
+        "wgsl-analyzer.hover.documentation.enable": {
           "markdownDescription": "Whether to show documentation on hover.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.hover.documentation.keywords.enable": {
-          "markdownDescription": "Whether to show keyword hover popups. Only applies when\n`#rust-analyzer.hover.documentation.enable#` is set.",
+        "wgsl-analyzer.hover.documentation.keywords.enable": {
+          "markdownDescription": "Whether to show keyword hover popups. Only applies when\n`#wgsl-analyzer.hover.documentation.enable#` is set.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.hover.dropGlue.enable": {
+        "wgsl-analyzer.hover.dropGlue.enable": {
           "markdownDescription": "Whether to show drop glue information on hover.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.hover.links.enable": {
+        "wgsl-analyzer.hover.links.enable": {
           "markdownDescription": "Use markdown syntax for links on hover.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.hover.maxSubstitutionLength": {
+        "wgsl-analyzer.hover.maxSubstitutionLength": {
           "markdownDescription": "Whether to show what types are used as generic arguments in calls etc. on hover, and what is their max length to show such types, beyond it they will be shown with ellipsis.\n\nThis can take three values: `null` means \"unlimited\", the string `\"hide\"` means to not show generic substitutions at all, and a number means to limit them to X characters.\n\nThe default is 20 characters.",
           "default": 20,
           "anyOf": [
@@ -822,7 +555,7 @@
             }
           ]
         },
-        "rust-analyzer.hover.memoryLayout.alignment": {
+        "wgsl-analyzer.hover.memoryLayout.alignment": {
           "markdownDescription": "How to render the align information in a memory layout hover.",
           "default": "hexadecimal",
           "anyOf": [
@@ -844,12 +577,12 @@
             }
           ]
         },
-        "rust-analyzer.hover.memoryLayout.enable": {
+        "wgsl-analyzer.hover.memoryLayout.enable": {
           "markdownDescription": "Whether to show memory layout data on hover.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.hover.memoryLayout.niches": {
+        "wgsl-analyzer.hover.memoryLayout.niches": {
           "markdownDescription": "How to render the niche information in a memory layout hover.",
           "default": false,
           "type": [
@@ -857,7 +590,7 @@
             "boolean"
           ]
         },
-        "rust-analyzer.hover.memoryLayout.offset": {
+        "wgsl-analyzer.hover.memoryLayout.offset": {
           "markdownDescription": "How to render the offset information in a memory layout hover.",
           "default": "hexadecimal",
           "anyOf": [
@@ -879,7 +612,7 @@
             }
           ]
         },
-        "rust-analyzer.hover.memoryLayout.padding": {
+        "wgsl-analyzer.hover.memoryLayout.padding": {
           "markdownDescription": "How to render the padding information in a memory layout hover.",
           "default": null,
           "anyOf": [
@@ -901,7 +634,7 @@
             }
           ]
         },
-        "rust-analyzer.hover.memoryLayout.size": {
+        "wgsl-analyzer.hover.memoryLayout.size": {
           "markdownDescription": "How to render the size information in a memory layout hover.",
           "default": "both",
           "anyOf": [
@@ -923,7 +656,7 @@
             }
           ]
         },
-        "rust-analyzer.hover.show.enumVariants": {
+        "wgsl-analyzer.hover.show.enumVariants": {
           "markdownDescription": "How many variants of an enum to display when hovering on. Show none if empty.",
           "default": 5,
           "type": [
@@ -932,7 +665,7 @@
           ],
           "minimum": 0
         },
-        "rust-analyzer.hover.show.fields": {
+        "wgsl-analyzer.hover.show.fields": {
           "markdownDescription": "How many fields of a struct, variant or union to display when hovering on. Show none if empty.",
           "default": 5,
           "type": [
@@ -941,138 +674,67 @@
           ],
           "minimum": 0
         },
-        "rust-analyzer.hover.show.traitAssocItems": {
-          "markdownDescription": "How many associated items of a trait to display when hovering a trait.",
-          "default": null,
-          "type": [
-            "null",
-            "integer"
-          ],
-          "minimum": 0
-        },
-        "rust-analyzer.imports.granularity.enforce": {
-          "markdownDescription": "Whether to enforce the import granularity setting for all files. If set to false rust-analyzer will try to keep import styles consistent per file.",
+        "wgsl-analyzer.imports.granularity.enforce": {
+          "markdownDescription": "Whether to enforce the import granularity setting for all files. If set to false wgsl-analyzer will try to keep import styles consistent per file.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.imports.granularity.group": {
+        "wgsl-analyzer.imports.granularity.group": {
           "markdownDescription": "How imports should be grouped into use statements.",
-          "default": "crate",
+          "default": "package",
           "type": "string",
           "enum": [
             "preserve",
-            "crate",
+            "package",
             "module",
             "item",
             "one"
           ],
           "enumDescriptions": [
             "Do not change the granularity of any imports and preserve the original structure written by the developer.",
-            "Merge imports from the same crate into a single use statement. Conversely, imports from different crates are split into separate statements.",
+            "Merge imports from the same package into a single use statement. Conversely, imports from different packages are split into separate statements.",
             "Merge imports from the same module into a single use statement. Conversely, imports from different modules are split into separate statements.",
             "Flatten imports so that each has its own use statement.",
             "Merge all imports into a single use statement as long as they have the same visibility and attributes."
           ]
         },
-        "rust-analyzer.imports.group.enable": {
-          "markdownDescription": "Group inserted imports by the [following order](https://rust-analyzer.github.io/book/features.html#auto-import). Groups are separated by newlines.",
+        "wgsl-analyzer.imports.group.enable": {
+          "markdownDescription": "Group inserted imports by the [following order](https://wgsl-analyzer.github.io/book/features.html#auto-import). Groups are separated by newlines.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.imports.merge.glob": {
-          "markdownDescription": "Whether to allow import insertion to merge new imports into single path glob imports like `use std::fmt::*;`.",
-          "default": true,
-          "type": "boolean"
-        },
-        "rust-analyzer.imports.preferNoStd": {
-          "markdownDescription": "Prefer to unconditionally use imports of the core and alloc crate, over the std crate.",
-          "default": false,
-          "type": "boolean"
-        },
-        "rust-analyzer.imports.preferPrelude": {
+        "wgsl-analyzer.imports.preferPrelude": {
           "markdownDescription": "Whether to prefer import paths containing a `prelude` module.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.imports.prefix": {
+        "wgsl-analyzer.imports.prefix": {
           "markdownDescription": "The path structure for newly inserted paths to use.",
           "default": "crate",
           "type": "string",
           "enum": [
             "plain",
             "self",
-            "crate"
+            "package"
           ],
           "enumDescriptions": [
             "Insert import paths relative to the current module, using up to one `super` prefix if the parent module contains the requested item.",
             "Insert import paths relative to the current module, using up to one `super` prefix if the parent module contains the requested item. Prefixes `self` in front of the path if it starts with a module.",
-            "Force import paths to be absolute by always starting them with `crate` or the extern crate name they come from."
+            "Force import paths to be absolute by always starting them with `package` or the extern package name they come from."
           ]
         },
-        "rust-analyzer.imports.prefixExternPrelude": {
-          "markdownDescription": "Whether to prefix external (including std, core) crate imports with `::`. e.g. \"use ::std::io::Read;\".",
-          "default": false,
-          "type": "boolean"
-        },
-        "rust-analyzer.inlayHints.bindingModeHints.enable": {
-          "markdownDescription": "Whether to show inlay type hints for binding modes.",
-          "default": false,
-          "type": "boolean"
-        },
-        "rust-analyzer.inlayHints.chainingHints.enable": {
-          "markdownDescription": "Whether to show inlay type hints for method chains.",
-          "default": true,
-          "type": "boolean"
-        },
-        "rust-analyzer.inlayHints.closingBraceHints.enable": {
+        "wgsl-analyzer.inlayHints.closingBraceHints.enable": {
           "markdownDescription": "Whether to show inlay hints after a closing `}` to indicate what item it belongs to.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.inlayHints.closingBraceHints.minLines": {
+        "wgsl-analyzer.inlayHints.closingBraceHints.minLines": {
           "markdownDescription": "Minimum number of lines required before the `}` until the hint is shown (set to 0 or 1\nto always show them).",
           "default": 25,
           "type": "integer",
           "minimum": 0
         },
-        "rust-analyzer.inlayHints.closureCaptureHints.enable": {
-          "markdownDescription": "Whether to show inlay hints for closure captures.",
-          "default": false,
-          "type": "boolean"
-        },
-        "rust-analyzer.inlayHints.closureReturnTypeHints.enable": {
-          "markdownDescription": "Whether to show inlay type hints for return types of closures.",
-          "default": "never",
-          "type": "string",
-          "enum": [
-            "always",
-            "never",
-            "with_block"
-          ],
-          "enumDescriptions": [
-            "Always show type hints for return types of closures.",
-            "Never show type hints for return types of closures.",
-            "Only show type hints for return types of closures with blocks."
-          ]
-        },
-        "rust-analyzer.inlayHints.closureStyle": {
-          "markdownDescription": "Closure notation in type and chaining inlay hints.",
-          "default": "impl_fn",
-          "type": "string",
-          "enum": [
-            "impl_fn",
-            "rust_analyzer",
-            "with_id",
-            "hide"
-          ],
-          "enumDescriptions": [
-            "`impl_fn`: `impl FnMut(i32, u64) -> i8`",
-            "`rust_analyzer`: `|i32, u64| -> i8`",
-            "`with_id`: `{closure#14352}`, where that id is the unique number of the closure in r-a internals",
-            "`hide`: Shows `...` for every closure type"
-          ]
-        },
-        "rust-analyzer.inlayHints.discriminantHints.enable": {
+        "wgsl-analyzer.inlayHints.discriminantHints.enable": {
           "markdownDescription": "Whether to show enum variant discriminant hints.",
           "default": "never",
           "type": "string",
@@ -1087,7 +749,7 @@
             "Only show discriminant hints on fieldless enum variants."
           ]
         },
-        "rust-analyzer.inlayHints.expressionAdjustmentHints.enable": {
+        "wgsl-analyzer.inlayHints.expressionAdjustmentHints.enable": {
           "markdownDescription": "Whether to show inlay hints for type adjustments.",
           "default": "never",
           "type": "string",
@@ -1102,12 +764,12 @@
             "Only show auto borrow and dereference adjustment hints."
           ]
         },
-        "rust-analyzer.inlayHints.expressionAdjustmentHints.hideOutsideUnsafe": {
+        "wgsl-analyzer.inlayHints.expressionAdjustmentHints.hideOutsideUnsafe": {
           "markdownDescription": "Whether to hide inlay hints for type adjustments outside of `unsafe` blocks.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.inlayHints.expressionAdjustmentHints.mode": {
+        "wgsl-analyzer.inlayHints.expressionAdjustmentHints.mode": {
           "markdownDescription": "Whether to show inlay hints as postfix ops (`.*` instead of `*`, etc).",
           "default": "prefix",
           "type": "string",
@@ -1124,32 +786,32 @@
             "Show prefix or postfix depending on which uses less parenthesis, preferring postfix."
           ]
         },
-        "rust-analyzer.inlayHints.genericParameterHints.const.enable": {
+        "wgsl-analyzer.inlayHints.genericParameterHints.const.enable": {
           "markdownDescription": "Whether to show const generic parameter name inlay hints.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.inlayHints.genericParameterHints.lifetime.enable": {
+        "wgsl-analyzer.inlayHints.genericParameterHints.lifetime.enable": {
           "markdownDescription": "Whether to show generic lifetime parameter name inlay hints.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.inlayHints.genericParameterHints.type.enable": {
+        "wgsl-analyzer.inlayHints.genericParameterHints.type.enable": {
           "markdownDescription": "Whether to show generic type parameter name inlay hints.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.inlayHints.implicitDrops.enable": {
+        "wgsl-analyzer.inlayHints.implicitDrops.enable": {
           "markdownDescription": "Whether to show implicit drop hints.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.inlayHints.implicitSizedBoundHints.enable": {
+        "wgsl-analyzer.inlayHints.implicitSizedBoundHints.enable": {
           "markdownDescription": "Whether to show inlay hints for the implied type parameter `Sized` bound.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.inlayHints.lifetimeElisionHints.enable": {
+        "wgsl-analyzer.inlayHints.lifetimeElisionHints.enable": {
           "markdownDescription": "Whether to show inlay type hints for elided lifetimes in function signatures.",
           "default": "never",
           "type": "string",
@@ -1164,12 +826,12 @@
             "Only show lifetime elision hints if a return type is involved."
           ]
         },
-        "rust-analyzer.inlayHints.lifetimeElisionHints.useParameterNames": {
+        "wgsl-analyzer.inlayHints.lifetimeElisionHints.useParameterNames": {
           "markdownDescription": "Whether to prefer using parameter names as the name for elided lifetime hints if possible.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.inlayHints.maxLength": {
+        "wgsl-analyzer.inlayHints.maxLength": {
           "markdownDescription": "Maximum length for inlay hints. Set to null to have an unlimited length.",
           "default": 25,
           "type": [
@@ -1178,18 +840,18 @@
           ],
           "minimum": 0
         },
-        "rust-analyzer.inlayHints.parameterHints.enable": {
+        "wgsl-analyzer.inlayHints.parameterHints.enable": {
           "markdownDescription": "Whether to show function parameter name inlay hints at the call\nsite.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.inlayHints.rangeExclusiveHints.enable": {
+        "wgsl-analyzer.inlayHints.rangeExclusiveHints.enable": {
           "markdownDescription": "Whether to show exclusive range inlay hints.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.inlayHints.reborrowHints.enable": {
-          "markdownDescription": "Whether to show inlay hints for compiler inserted reborrows.\nThis setting is deprecated in favor of #rust-analyzer.inlayHints.expressionAdjustmentHints.enable#.",
+        "wgsl-analyzer.inlayHints.reborrowHints.enable": {
+          "markdownDescription": "Whether to show inlay hints for compiler inserted reborrows.\nThis setting is deprecated in favor of #wgsl-analyzer.inlayHints.expressionAdjustmentHints.enable#.",
           "default": "never",
           "type": "string",
           "enum": [
@@ -1203,72 +865,62 @@
             "Only show mutable reborrow hints."
           ]
         },
-        "rust-analyzer.inlayHints.renderColons": {
+        "wgsl-analyzer.inlayHints.renderColons": {
           "markdownDescription": "Whether to render leading colons for type hints, and trailing colons for parameter hints.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.inlayHints.typeHints.enable": {
+        "wgsl-analyzer.inlayHints.typeHints.enable": {
           "markdownDescription": "Whether to show inlay type hints for variables.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.inlayHints.typeHints.hideClosureInitialization": {
-          "markdownDescription": "Whether to hide inlay type hints for `let` statements that initialize to a closure.\nOnly applies to closures with blocks, same as `#rust-analyzer.inlayHints.closureReturnTypeHints.enable#`.",
-          "default": false,
-          "type": "boolean"
-        },
-        "rust-analyzer.inlayHints.typeHints.hideClosureParameter": {
-          "markdownDescription": "Whether to hide inlay parameter type hints for closures.",
-          "default": false,
-          "type": "boolean"
-        },
-        "rust-analyzer.inlayHints.typeHints.hideNamedConstructor": {
+        "wgsl-analyzer.inlayHints.typeHints.hideNamedConstructor": {
           "markdownDescription": "Whether to hide inlay type hints for constructors.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.interpret.tests": {
+        "wgsl-analyzer.interpret.tests": {
           "markdownDescription": "Enables the experimental support for interpreting tests.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.joinLines.joinAssignments": {
+        "wgsl-analyzer.joinLines.joinAssignments": {
           "markdownDescription": "Join lines merges consecutive declaration and initialization of an assignment.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.joinLines.joinElseIf": {
+        "wgsl-analyzer.joinLines.joinElseIf": {
           "markdownDescription": "Join lines inserts else between consecutive ifs.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.joinLines.removeTrailingComma": {
+        "wgsl-analyzer.joinLines.removeTrailingComma": {
           "markdownDescription": "Join lines removes trailing commas.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.joinLines.unwrapTrivialBlock": {
+        "wgsl-analyzer.joinLines.unwrapTrivialBlock": {
           "markdownDescription": "Join lines unwraps trivial blocks.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.lens.debug.enable": {
-          "markdownDescription": "Whether to show `Debug` lens. Only applies when\n`#rust-analyzer.lens.enable#` is set.",
+        "wgsl-analyzer.lens.debug.enable": {
+          "markdownDescription": "Whether to show `Debug` lens. Only applies when\n`#wgsl-analyzer.lens.enable#` is set.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.lens.enable": {
-          "markdownDescription": "Whether to show CodeLens in Rust files.",
+        "wgsl-analyzer.lens.enable": {
+          "markdownDescription": "Whether to show CodeLens in WGSL files.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.lens.implementations.enable": {
-          "markdownDescription": "Whether to show `Implementations` lens. Only applies when\n`#rust-analyzer.lens.enable#` is set.",
+        "wgsl-analyzer.lens.implementations.enable": {
+          "markdownDescription": "Whether to show `Implementations` lens. Only applies when\n`#wgsl-analyzer.lens.enable#` is set.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.lens.location": {
+        "wgsl-analyzer.lens.location": {
           "markdownDescription": "Where to render annotations.",
           "default": "above_name",
           "type": "string",
@@ -1281,38 +933,23 @@
             "Render annotations above the whole item, including documentation comments and attributes."
           ]
         },
-        "rust-analyzer.lens.references.adt.enable": {
-          "markdownDescription": "Whether to show `References` lens for Struct, Enum, and Union.\nOnly applies when `#rust-analyzer.lens.enable#` is set.",
+        "wgsl-analyzer.lens.references.adt.enable": {
+          "markdownDescription": "Whether to show `References` lens for Struct, Enum, and Union.\nOnly applies when `#wgsl-analyzer.lens.enable#` is set.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.lens.references.enumVariant.enable": {
-          "markdownDescription": "Whether to show `References` lens for Enum Variants.\nOnly applies when `#rust-analyzer.lens.enable#` is set.",
+        "wgsl-analyzer.lens.references.enumVariant.enable": {
+          "markdownDescription": "Whether to show `References` lens for Enum Variants.\nOnly applies when `#wgsl-analyzer.lens.enable#` is set.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.lens.references.method.enable": {
-          "markdownDescription": "Whether to show `Method References` lens. Only applies when\n`#rust-analyzer.lens.enable#` is set.",
+        "wgsl-analyzer.lens.references.method.enable": {
+          "markdownDescription": "Whether to show `Method References` lens. Only applies when\n`#wgsl-analyzer.lens.enable#` is set.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.lens.references.trait.enable": {
-          "markdownDescription": "Whether to show `References` lens for Trait.\nOnly applies when `#rust-analyzer.lens.enable#` is set.",
-          "default": false,
-          "type": "boolean"
-        },
-        "rust-analyzer.lens.run.enable": {
-          "markdownDescription": "Whether to show `Run` lens. Only applies when\n`#rust-analyzer.lens.enable#` is set.",
-          "default": true,
-          "type": "boolean"
-        },
-        "rust-analyzer.lens.updateTest.enable": {
-          "markdownDescription": "Whether to show `Update Test` lens. Only applies when\n`#rust-analyzer.lens.enable#` and `#rust-analyzer.lens.run.enable#` are set.",
-          "default": true,
-          "type": "boolean"
-        },
-        "rust-analyzer.linkedProjects": {
-          "markdownDescription": "Disable project auto-discovery in favor of explicitly specified set\nof projects.\n\nElements must be paths pointing to `Cargo.toml`,\n`rust-project.json`, `.rs` files (which will be treated as standalone files) or JSON\nobjects in `rust-project.json` format.",
+        "wgsl-analyzer.linkedProjects": {
+          "markdownDescription": "Disable project auto-discovery in favor of explicitly specified set\nof projects.\n\nElements must be paths pointing to `Wesl.toml`,\n`wgsl-project.json`, `.rs` files (which will be treated as standalone files) or JSON\nobjects in `wgsl-project.json` format.",
           "default": [],
           "type": "array",
           "items": {
@@ -1322,8 +959,8 @@
             ]
           }
         },
-        "rust-analyzer.lru.capacity": {
-          "markdownDescription": "Number of syntax trees rust-analyzer keeps in memory. Defaults to 128.",
+        "wgsl-analyzer.lru.capacity": {
+          "markdownDescription": "Number of syntax trees wgsl-analyzer keeps in memory. Defaults to 128.",
           "default": null,
           "type": [
             "null",
@@ -1332,17 +969,17 @@
           "minimum": 0,
           "maximum": 65535
         },
-        "rust-analyzer.lru.query.capacities": {
+        "wgsl-analyzer.lru.query.capacities": {
           "markdownDescription": "Sets the LRU capacity of the specified queries.",
           "default": {},
           "type": "object"
         },
-        "rust-analyzer.notifications.cargoTomlNotFound": {
-          "markdownDescription": "Whether to show `can't find Cargo.toml` error message.",
+        "wgsl-analyzer.notifications.weslTomlNotFound": {
+          "markdownDescription": "Whether to show `can't find wesl.toml` error message.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.numThreads": {
+        "wgsl-analyzer.numThreads": {
           "markdownDescription": "How many worker threads in the main loop. The default `null` means to pick automatically.",
           "default": null,
           "anyOf": [
@@ -1367,83 +1004,26 @@
             }
           ]
         },
-        "rust-analyzer.procMacro.attributes.enable": {
-          "markdownDescription": "Expand attribute macros. Requires `#rust-analyzer.procMacro.enable#` to be set.",
-          "default": true,
-          "type": "boolean"
-        },
-        "rust-analyzer.procMacro.enable": {
-          "markdownDescription": "Enable support for procedural macros, implies `#rust-analyzer.cargo.buildScripts.enable#`.",
-          "default": true,
-          "type": "boolean"
-        },
-        "rust-analyzer.procMacro.ignored": {
-          "markdownDescription": "These proc-macros will be ignored when trying to expand them.\n\nThis config takes a map of crate names with the exported proc-macro names to ignore as values.",
-          "default": {},
-          "type": "object"
-        },
-        "rust-analyzer.procMacro.server": {
-          "markdownDescription": "Internal config, path to proc-macro server executable.",
-          "default": null,
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "rust-analyzer.references.excludeImports": {
+        "wgsl-analyzer.references.excludeImports": {
           "markdownDescription": "Exclude imports from find-all-references.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.references.excludeTests": {
+        "wgsl-analyzer.references.excludeTests": {
           "markdownDescription": "Exclude tests from find-all-references and call-hierarchy.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.runnables.command": {
-          "markdownDescription": "Command to be executed instead of 'cargo' for runnables.",
-          "default": null,
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "rust-analyzer.runnables.extraArgs": {
-          "markdownDescription": "Additional arguments to be passed to cargo for runnables such as\ntests or binaries. For example, it may be `--release`.",
+        "wgsl-analyzer.wgslfmt.extraArgs": {
+          "markdownDescription": "Additional arguments to `wgslfmt`.",
           "default": [],
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "rust-analyzer.runnables.extraTestBinaryArgs": {
-          "markdownDescription": "Additional arguments to be passed through Cargo to launched tests, benchmarks, or\ndoc-tests.\n\nUnless the launched target uses a\n[custom test harness](https://doc.rust-lang.org/cargo/reference/cargo-targets.html#the-harness-field),\nthey will end up being interpreted as options to\n[`rustc`’s built-in test harness (“libtest”)](https://doc.rust-lang.org/rustc/tests/index.html#cli-arguments).",
-          "default": [
-            "--show-output"
-          ],
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "rust-analyzer.rustc.source": {
-          "markdownDescription": "Path to the Cargo.toml of the rust compiler workspace, for usage in rustc_private\nprojects, or \"discover\" to try to automatically find it if the `rustc-dev` component\nis installed.\n\nAny project which uses rust-analyzer with the rustcPrivate\ncrates must set `[package.metadata.rust-analyzer] rustc_private=true` to use it.\n\nThis option does not take effect until rust-analyzer is restarted.",
-          "default": null,
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "rust-analyzer.rustfmt.extraArgs": {
-          "markdownDescription": "Additional arguments to `rustfmt`.",
-          "default": [],
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "rust-analyzer.rustfmt.overrideCommand": {
-          "markdownDescription": "Advanced option, fully override the command rust-analyzer uses for\nformatting. This should be the equivalent of `rustfmt` here, and\nnot that of `cargo fmt`. The file contents will be passed on the\nstandard input and the formatted result will be read from the\nstandard output.",
+        "wgsl-analyzer.wgslfmt.overrideCommand": {
+          "markdownDescription": "Advanced option, fully override the command wgsl-analyzer uses for\nformatting. This should be the equivalent of `wgslfmt` here, and\nnot that of `wesl fmt`. The file contents will be passed on the\nstandard input and the formatted result will be read from the\nstandard output.",
           "default": null,
           "type": [
             "null",
@@ -1453,52 +1033,47 @@
             "type": "string"
           }
         },
-        "rust-analyzer.rustfmt.rangeFormatting.enable": {
-          "markdownDescription": "Enables the use of rustfmt's unstable range formatting command for the\n`textDocument/rangeFormatting` request. The rustfmt option is unstable and only\navailable on a nightly build.",
+        "wgsl-analyzer.wgslfmt.rangeFormatting.enable": {
+          "markdownDescription": "Enables the use of wgslfmt's unstable range formatting command for the\n`textDocument/rangeFormatting` request. The wgslfmt option is unstable and only\navailable on a nightly build.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.semanticHighlighting.doc.comment.inject.enable": {
-          "markdownDescription": "Inject additional highlighting into doc comments.\n\nWhen enabled, rust-analyzer will highlight rust source in doc comments as well as intra\ndoc links.",
+        "wgsl-analyzer.semanticHighlighting.doc.comment.inject.enable": {
+          "markdownDescription": "Inject additional highlighting into doc comments.\n\nWhen enabled, wgsl-analyzer will highlight WGSL source in doc comments as well as intra\ndoc links.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.semanticHighlighting.nonStandardTokens": {
+        "wgsl-analyzer.semanticHighlighting.nonStandardTokens": {
           "markdownDescription": "Whether the server is allowed to emit non-standard tokens and modifiers.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.semanticHighlighting.operator.enable": {
-          "markdownDescription": "Use semantic tokens for operators.\n\nWhen disabled, rust-analyzer will emit semantic tokens only for operator tokens when\nthey are tagged with modifiers.",
+        "wgsl-analyzer.semanticHighlighting.operator.enable": {
+          "markdownDescription": "Use semantic tokens for operators.\n\nWhen disabled, wgsl-analyzer will emit semantic tokens only for operator tokens when\nthey are tagged with modifiers.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.semanticHighlighting.operator.specialization.enable": {
-          "markdownDescription": "Use specialized semantic tokens for operators.\n\nWhen enabled, rust-analyzer will emit special token types for operator tokens instead\nof the generic `operator` token type.",
+        "wgsl-analyzer.semanticHighlighting.operator.specialization.enable": {
+          "markdownDescription": "Use specialized semantic tokens for operators.\n\nWhen enabled, wgsl-analyzer will emit special token types for operator tokens instead\nof the generic `operator` token type.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.semanticHighlighting.punctuation.enable": {
-          "markdownDescription": "Use semantic tokens for punctuation.\n\nWhen disabled, rust-analyzer will emit semantic tokens only for punctuation tokens when\nthey are tagged with modifiers or have a special role.",
+        "wgsl-analyzer.semanticHighlighting.punctuation.enable": {
+          "markdownDescription": "Use semantic tokens for punctuation.\n\nWhen disabled, wgsl-analyzer will emit semantic tokens only for punctuation tokens when\nthey are tagged with modifiers or have a special role.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.semanticHighlighting.punctuation.separate.macro.bang": {
-          "markdownDescription": "When enabled, rust-analyzer will emit a punctuation semantic token for the `!` of macro\ncalls.",
+        "wgsl-analyzer.semanticHighlighting.punctuation.specialization.enable": {
+          "markdownDescription": "Use specialized semantic tokens for punctuation.\n\nWhen enabled, wgsl-analyzer will emit special token types for punctuation tokens instead\nof the generic `punctuation` token type.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.semanticHighlighting.punctuation.specialization.enable": {
-          "markdownDescription": "Use specialized semantic tokens for punctuation.\n\nWhen enabled, rust-analyzer will emit special token types for punctuation tokens instead\nof the generic `punctuation` token type.",
-          "default": false,
-          "type": "boolean"
-        },
-        "rust-analyzer.semanticHighlighting.strings.enable": {
-          "markdownDescription": "Use semantic tokens for strings.\n\nIn some editors (e.g. vscode) semantic tokens override other highlighting grammars.\nBy disabling semantic tokens for strings, other grammars can be used to highlight\ntheir contents.",
+        "wgsl-analyzer.semanticHighlighting.strings.enable": {
+          "markdownDescription": "Use semantic tokens for strings.\n\nIn some editors (e.g. VS Code) semantic tokens override other highlighting grammars.\nBy disabling semantic tokens for strings, other grammars can be used to highlight\ntheir contents.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.signatureInfo.detail": {
+        "wgsl-analyzer.signatureInfo.detail": {
           "markdownDescription": "Show full signature of the callable. Only shows parameters if disabled.",
           "default": "full",
           "type": "string",
@@ -1511,12 +1086,12 @@
             "Show only the parameters."
           ]
         },
-        "rust-analyzer.signatureInfo.documentation.enable": {
+        "wgsl-analyzer.signatureInfo.documentation.enable": {
           "markdownDescription": "Show documentation.",
           "default": true,
           "type": "boolean"
         },
-        "rust-analyzer.typing.triggerChars": {
+        "wgsl-analyzer.typing.triggerChars": {
           "markdownDescription": "Specify the characters allowed to invoke special on typing triggers.\n- typing `=` after `let` tries to smartly add `;` if `=` is followed by an existing expression\n- typing `=` between two expressions adds `;` when in statement position\n- typing `=` to turn an assignment into an equality comparison removes `;` when in expression position\n- typing `.` in a chain method call auto-indents\n- typing `{` or `(` in front of an expression inserts a closing `}` or `)` after the expression\n- typing `{` in a use item adds a closing `}` in the right place\n- typing `>` to complete a return type `->` will insert a whitespace after it\n- typing `<` in a path or type position inserts a closing `>` after the path or type.",
           "default": "=.",
           "type": [
@@ -1524,16 +1099,16 @@
             "string"
           ]
         },
-        "rust-analyzer.vfs.extraIncludes": {
-          "markdownDescription": "Additional paths to include in the VFS. Generally for code that is\ngenerated or otherwise managed by a build system outside of Cargo,\nthough Cargo might be the eventual consumer.",
+        "wgsl-analyzer.vfs.extraIncludes": {
+          "markdownDescription": "Additional paths to include in the VFS. Generally for code that is\ngenerated or otherwise managed by a build system outside of wesl,\nthough wesl might be the eventual consumer.",
           "default": [],
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "rust-analyzer.workspace.discoverConfig": {
-          "markdownDescription": "Enables automatic discovery of projects using [`DiscoverWorkspaceConfig::command`].\n\n[`DiscoverWorkspaceConfig`] also requires setting `progress_label` and `files_to_watch`.\n`progress_label` is used for the title in progress indicators, whereas `files_to_watch`\nis used to determine which build system-specific files should be watched in order to\nreload rust-analyzer.\n\nBelow is an example of a valid configuration:\n```json\n\"rust-analyzer.workspace.discoverConfig\": {\n    \"command\": [\n        \"rust-project\",\n        \"develop-json\"\n    ],\n    \"progressLabel\": \"rust-analyzer\",\n    \"filesToWatch\": [\n        \"BUCK\"\n    ]\n}\n```\n\n## On `DiscoverWorkspaceConfig::command`\n\n**Warning**: This format is provisional and subject to change.\n\n[`DiscoverWorkspaceConfig::command`] *must* return a JSON object\ncorresponding to `DiscoverProjectData::Finished`:\n\n```norun\n#[derive(Debug, Clone, Deserialize, Serialize)]\n#[serde(tag = \"kind\")]\n#[serde(rename_all = \"snake_case\")]\nenum DiscoverProjectData {\n    Finished { buildfile: Utf8PathBuf, project: ProjectJsonData },\n    Error { error: String, source: Option<String> },\n    Progress { message: String },\n}\n```\n\nAs JSON, `DiscoverProjectData::Finished` is:\n\n```json\n{\n    // the internally-tagged representation of the enum.\n    \"kind\": \"finished\",\n    // the file used by a non-Cargo build system to define\n    // a package or target.\n    \"buildfile\": \"rust-analyzer/BUILD\",\n    // the contents of a rust-project.json, elided for brevity\n    \"project\": {\n        \"sysroot\": \"foo\",\n        \"crates\": []\n    }\n}\n```\n\nIt is encouraged, but not required, to use the other variants on\n`DiscoverProjectData` to provide a more polished end-user experience.\n\n`DiscoverWorkspaceConfig::command` may *optionally* include an `{arg}`,\nwhich will be substituted with the JSON-serialized form of the following\nenum:\n\n```norun\n#[derive(PartialEq, Clone, Debug, Serialize)]\n#[serde(rename_all = \"camelCase\")]\npub enum DiscoverArgument {\n   Path(AbsPathBuf),\n   Buildfile(AbsPathBuf),\n}\n```\n\nThe JSON representation of `DiscoverArgument::Path` is:\n\n```json\n{\n    \"path\": \"src/main.rs\"\n}\n```\n\nSimilarly, the JSON representation of `DiscoverArgument::Buildfile` is:\n\n```json\n{\n    \"buildfile\": \"BUILD\"\n}\n```\n\n`DiscoverArgument::Path` is used to find and generate a `rust-project.json`,\nand therefore, a workspace, whereas `DiscoverArgument::buildfile` is used to\nto update an existing workspace. As a reference for implementors,\nbuck2's `rust-project` will likely be useful:\nhttps://github.com/facebook/buck2/tree/main/integrations/rust-project.",
+        "wgsl-analyzer.workspace.discoverConfig": {
+          "markdownDescription": "Enables automatic discovery of projects using [`DiscoverWorkspaceConfig::command`].\n\n[`DiscoverWorkspaceConfig`] also requires setting `progress_label` and `files_to_watch`.\n`progress_label` is used for the title in progress indicators, whereas `files_to_watch`\nis used to determine which build system-specific files should be watched in order to\nreload wgsl-analyzer.\n\nBelow is an example of a valid configuration:\n```json\n\"wgsl-analyzer.workspace.discoverConfig\": {\n    \"command\": [\n        \"wesl-project\",\n        \"develop-json\"\n    ],\n    \"progressLabel\": \"wgsl-analyzer\",\n    \"filesToWatch\": [\n        \"BUCK\"\n    ]\n}\n```\n\n## On `DiscoverWorkspaceConfig::command`\n\n**Warning**: This format is provisional and subject to change.\n\n[`DiscoverWorkspaceConfig::command`] *must* return a JSON object\ncorresponding to `DiscoverProjectData::Finished`:\n\n```norun\n#[derive(Debug, Clone, Deserialize, Serialize)]\n#[serde(tag = \"kind\")]\n#[serde(rename_all = \"snake_case\")]\nenum DiscoverProjectData {\n    Finished { buildfile: Utf8PathBuf, project: ProjectJsonData },\n    Error { error: String, source: Option<String> },\n    Progress { message: String },\n}\n```\n\nAs JSON, `DiscoverProjectData::Finished` is:\n\n```json\n{\n    // the internally-tagged representation of the enum.\n    \"kind\": \"finished\",\n    // the file used by a non-wesl-rs build system to define\n    // a package or target.\n    \"buildfile\": \"wgsl-analyzer/BUILD\",\n    // the contents of a wgsl-project.json, elided for brevity\n    \"project\": {\n        \"sysroot\": \"foo\",\n        \"crates\": []\n    }\n}\n```\n\nIt is encouraged, but not required, to use the other variants on\n`DiscoverProjectData` to provide a more polished end-user experience.\n\n`DiscoverWorkspaceConfig::command` may *optionally* include an `{arg}`,\nwhich will be substituted with the JSON-serialized form of the following\nenum:\n\n```norun\n#[derive(PartialEq, Clone, Debug, Serialize)]\n#[serde(rename_all = \"camelCase\")]\npub enum DiscoverArgument {\n   Path(AbsPathBuf),\n   Buildfile(AbsPathBuf),\n}\n```\n\nThe JSON representation of `DiscoverArgument::Path` is:\n\n```json\n{\n    \"path\": \"src/main.rs\"\n}\n```\n\nSimilarly, the JSON representation of `DiscoverArgument::Buildfile` is:\n\n```json\n{\n    \"buildfile\": \"BUILD\"\n}\n```\n\n`DiscoverArgument::Path` is used to find and generate a `wgsl-project.json`,\nand therefore, a workspace, whereas `DiscoverArgument::buildfile` is used to\nto update an existing workspace.",
           "default": null,
           "anyOf": [
             {
@@ -1561,12 +1136,12 @@
             }
           ]
         },
-        "rust-analyzer.workspace.symbol.search.excludeImports": {
+        "wgsl-analyzer.workspace.symbol.search.excludeImports": {
           "markdownDescription": "Exclude all imports from workspace symbol search.\n\nIn addition to regular imports (which are always excluded),\nthis option removes public imports (better known as re-exports)\nand removes imports that rename the imported symbol.",
           "default": false,
           "type": "boolean"
         },
-        "rust-analyzer.workspace.symbol.search.kind": {
+        "wgsl-analyzer.workspace.symbol.search.kind": {
           "markdownDescription": "Workspace symbol search kind.",
           "default": "only_types",
           "type": "string",
@@ -1579,13 +1154,13 @@
             "Search for all symbols kinds."
           ]
         },
-        "rust-analyzer.workspace.symbol.search.limit": {
+        "wgsl-analyzer.workspace.symbol.search.limit": {
           "markdownDescription": "Limits the number of items returned from a workspace symbol search (Defaults to 128).\nSome clients like vs-code issue new searches on result filtering and don't require all results to be returned in the initial search.\nOther clients requires all results upfront and might require a higher limit.",
           "default": 128,
           "type": "integer",
           "minimum": 0
         },
-        "rust-analyzer.workspace.symbol.search.scope": {
+        "wgsl-analyzer.workspace.symbol.search.scope": {
           "markdownDescription": "Workspace symbol search scope.",
           "default": "workspace",
           "type": "string",
@@ -1602,179 +1177,159 @@
     },
     "commands": [
       {
-        "command": "rust-analyzer.analyzerStatus",
+        "command": "wgsl-analyzer.analyzerStatus",
         "title": "Status",
-        "category": "rust-analyzer"
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.memoryUsage",
+        "command": "wgsl-analyzer.memoryUsage",
         "title": "Memory Usage (Clears Database)",
-        "category": "rust-analyzer"
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.reloadWorkspace",
+        "command": "wgsl-analyzer.reloadWorkspace",
         "title": "Reload workspace",
-        "category": "rust-analyzer"
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.joinLines",
+        "command": "wgsl-analyzer.joinLines",
         "title": "Join lines",
-        "category": "rust-analyzer"
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.matchingBrace",
+        "command": "wgsl-analyzer.matchingBrace",
         "title": "Find matching brace",
-        "category": "rust-analyzer"
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.openDocs",
+        "command": "wgsl-analyzer.openDocs",
         "title": "Open docs under cursor",
-        "category": "rust-analyzer"
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.openCargoToml",
-        "title": "Open Cargo.toml",
-        "category": "rust-analyzer"
+        "command": "wgsl-analyzer.openWeslToml",
+        "title": "Open wesl.toml",
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.parentModule",
+        "command": "wgsl-analyzer.parentModule",
         "title": "Locate parent module",
-        "category": "rust-analyzer"
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.reload",
+        "command": "wgsl-analyzer.reload",
         "title": "Restart server",
-        "category": "rust-analyzer"
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.run",
+        "command": "wgsl-analyzer.run",
         "title": "Run",
-        "category": "rust-analyzer"
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.debug",
+        "command": "wgsl-analyzer.debug",
         "title": "Debug",
-        "category": "rust-analyzer"
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.ssr",
+        "command": "wgsl-analyzer.ssr",
         "title": "Structural Search Replace",
-        "category": "rust-analyzer"
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.serverVersion",
-        "title": "Show current Rust Analyzer server version",
-        "category": "rust-analyzer"
+        "command": "wgsl-analyzer.serverVersion",
+        "title": "Show current wgsl-analyzer server version",
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.syntaxTree",
+        "command": "wgsl-analyzer.syntaxTree",
         "title": "Show Syntax Tree",
-        "category": "rust-analyzer"
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.testCurrent",
+        "command": "wgsl-analyzer.testCurrent",
         "title": "Test Current",
-        "category": "rust-analyzer"
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.install",
-        "title": "Install Rust Analyzer from GitHub release",
-        "category": "rust-analyzer"
+        "command": "wgsl-analyzer.install",
+        "title": "Install wgsl-analyzer from GitHub release",
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.upgrade",
-        "title": "Upgrade Rust Analyzer from GitHub release",
-        "category": "rust-analyzer"
+        "command": "wgsl-analyzer.upgrade",
+        "title": "Upgrade wgsl-analyzer from GitHub release",
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.expandMacro",
-        "title": "Expand macro recursively at caret",
-        "category": "rust-analyzer"
-      },
-      {
-        "command": "rust-analyzer.viewHir",
-        "title": "View Hir",
-        "category": "rust-analyzer"
-      },
-      {
-        "command": "rust-analyzer.viewMir",
-        "title": "View Mir",
-        "category": "rust-analyzer"
-      },
-      {
-        "command": "rust-analyzer.viewFileText",
+        "command": "wgsl-analyzer.viewFileText",
         "title": "View File Text (as seen by the server)",
-        "category": "rust-analyzer"
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.viewItemTree",
+        "command": "wgsl-analyzer.viewItemTree",
         "title": "Debug ItemTree",
-        "category": "rust-analyzer"
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.viewCrateGraph",
-        "title": "View Crate Graph",
-        "category": "rust-analyzer"
+        "command": "wgsl-analyzer.viewPackageGraph",
+        "title": "View Package Graph",
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.shuffleCrateGraph",
-        "title": "Shuffle Crate Graph",
-        "category": "rust-analyzer"
+        "command": "wgsl-analyzer.shufflePackageGraph",
+        "title": "Shuffle Package Graph",
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.viewFullCrateGraph",
-        "title": "View Crate Graph (Full)",
-        "category": "rust-analyzer"
+        "command": "wgsl-analyzer.viewFullPackageGraph",
+        "title": "View Package Graph (Full)",
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.echoRunCommandLine",
+        "command": "wgsl-analyzer.echoRunCommandLine",
         "title": "Echo Run Command Line",
-        "category": "rust-analyzer"
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.peekTests",
+        "command": "wgsl-analyzer.peekTests",
         "title": "Peek related tests",
-        "category": "rust-analyzer"
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.moveItemUp",
+        "command": "wgsl-analyzer.moveItemUp",
         "title": "Move item up",
-        "category": "rust-analyzer"
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.moveItemDown",
+        "command": "wgsl-analyzer.moveItemDown",
         "title": "Move item down",
-        "category": "rust-analyzer"
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.runFlycheck",
+        "command": "wgsl-analyzer.runFlycheck",
         "title": "Run flycheck",
-        "category": "rust-analyzer"
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.cancelFlycheck",
+        "command": "wgsl-analyzer.cancelFlycheck",
         "title": "Cancel running flychecks",
-        "category": "rust-analyzer"
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.clearFlycheck",
+        "command": "wgsl-analyzer.clearFlycheck",
         "title": "Clear flycheck diagnostics",
-        "category": "rust-analyzer"
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.rebuildProcMacros",
-        "title": "Rebuild proc macros and build scripts",
-        "category": "rust-analyzer"
-      },
-      {
-        "command": "rust-analyzer.interpretFunction",
+        "command": "wgsl-analyzer.interpretFunction",
         "title": "Interpret Function",
-        "category": "rust-analyzer"
+        "category": "wgsl-analyzer"
       },
       {
-        "command": "rust-analyzer.explainError",
+        "command": "wgsl-analyzer.explainError",
         "title": "Explain the currently hovered diagnostic",
-        "category": "rust-analyzer"
+        "category": "wgsl-analyzer"
       }
     ]
   }

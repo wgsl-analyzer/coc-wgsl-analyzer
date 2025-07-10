@@ -1,13 +1,11 @@
 version: 2
 updates:
-- package-ecosystem: npm
-  open-pull-requests-limit: 10
-  directory: "/"
-  schedule:
-    interval: monthly
-  groups:
-    dev-dependencies-ts-eslint:
-      patterns:
-      - "@typescript-eslint/*"
-  reviewers:
-  - fannheyward
+  - package-ecosystem: npm
+    open-pull-requests-limit: 10
+    directory: '/'
+    schedule:
+      interval: monthly
+    groups:
+      dev-dependencies-ts-eslint:
+        patterns:
+          - '@typescript-eslint/*'

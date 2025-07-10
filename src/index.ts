@@ -17,7 +17,7 @@ export async function activate(context: ExtensionContext): Promise<void> {
 
   const bin = ctx.resolveBin();
   if (!bin) {
-    let msg = 'Rust Analyzer is not found, download from GitHub release?';
+    let msg = 'wgsl-analyzer is not found, download from GitHub release?';
     let ret = ctx.config.prompt === 'neverDownload' ? -1 : 0;
     if (ctx.config.prompt === true) {
       ret = await window.showQuickpick(['Yes', 'Cancel'], msg);
@@ -29,7 +29,7 @@ export async function activate(context: ExtensionContext): Promise<void> {
         await downloadServer(context, latest);
       } catch (e) {
         console.error(e);
-        msg = 'Download rust-analyzer failed, you can get it from https://github.com/rust-analyzer/rust-analyzer';
+        msg = 'Download wgsl-analyzer failed, you can get it from https://github.com/wgsl-analyzer/wgsl-analyzer';
         window.showErrorMessage(msg);
         return;
       }
@@ -52,8 +52,6 @@ export async function activate(context: ExtensionContext): Promise<void> {
   ctx.registerCommand('reload', cmds.reload);
   ctx.registerCommand('install', cmds.install);
   ctx.registerCommand('upgrade', cmds.upgrade);
-  ctx.registerCommand('viewHir', cmds.viewHir);
-  ctx.registerCommand('viewMir', cmds.viewMir);
   ctx.registerCommand('openDocs', cmds.openDocs);
   ctx.registerCommand('joinLines', cmds.joinLines);
   ctx.registerCommand('peekTests', cmds.peekTests);
@@ -61,24 +59,22 @@ export async function activate(context: ExtensionContext): Promise<void> {
   ctx.registerCommand('moveItemUp', cmds.moveItemUp);
   ctx.registerCommand('testCurrent', cmds.testCurrent);
   ctx.registerCommand('memoryUsage', cmds.memoryUsage);
-  ctx.registerCommand('expandMacro', cmds.expandMacro);
   ctx.registerCommand('moveItemDown', cmds.moveItemDown);
   ctx.registerCommand('viewFileText', cmds.viewFileText);
   ctx.registerCommand('viewItemTree', cmds.viewItemTree);
   ctx.registerCommand('explainError', cmds.explainError);
   ctx.registerCommand('parentModule', cmds.parentModule);
   ctx.registerCommand('matchingBrace', cmds.matchingBrace);
-  ctx.registerCommand('openCargoToml', cmds.openCargoToml);
+  ctx.registerCommand('openWebbyToml', cmds.openWebbyToml);
   ctx.registerCommand('serverVersion', cmds.serverVersion);
   ctx.registerCommand('runFlycheck', cmds.runFlycheck);
   ctx.registerCommand('cancelFlycheck', cmds.cancelFlycheck);
   ctx.registerCommand('clearFlycheck', cmds.clearFlycheck);
   ctx.registerCommand('analyzerStatus', cmds.analyzerStatus);
-  ctx.registerCommand('viewCrateGraph', cmds.viewCrateGraph);
+  ctx.registerCommand('viewPackageGraph', cmds.viewPackageGraph);
   ctx.registerCommand('interpretFunction', cmds.interpretFunction);
-  ctx.registerCommand('rebuildProcMacros', cmds.rebuildProcMacros);
-  ctx.registerCommand('shuffleCrateGraph', cmds.shuffleCrateGraph);
-  ctx.registerCommand('viewFullCrateGraph', cmds.viewFullCrateGraph);
+  ctx.registerCommand('shufflePackageGraph', cmds.shufflePackageGraph);
+  ctx.registerCommand('viewFullPackageGraph', cmds.viewFullPackageGraph);
   ctx.registerCommand('reloadWorkspace', cmds.reloadWorkspace);
   ctx.registerCommand('echoRunCommandLine', cmds.echoRunCommandLine);
 

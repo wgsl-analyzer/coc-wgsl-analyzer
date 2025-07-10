@@ -4,18 +4,18 @@
 const fs = require('fs');
 const { execSync } = require('child_process');
 const packageJson = require('./package.json');
-const coc_ra_config = require('./coc-rust-analyzer-configurations.json');
+const coc_ra_config = require('./coc-wgsl-analyzer-configurations.json');
 
 const not_supported = [
-  'rust-analyzer.hover.actions.debug.enable',
-  'rust-analyzer.hover.actions.enable',
-  'rust-analyzer.hover.actions.gotoTypeDef.enable',
-  'rust-analyzer.hover.actions.implementations.enable',
-  'rust-analyzer.hover.actions.references.enable',
-  'rust-analyzer.hover.actions.run.enable',
+  'wgsl-analyzer.hover.actions.debug.enable',
+  'wgsl-analyzer.hover.actions.enable',
+  'wgsl-analyzer.hover.actions.gotoTypeDef.enable',
+  'wgsl-analyzer.hover.actions.implementations.enable',
+  'wgsl-analyzer.hover.actions.references.enable',
+  'wgsl-analyzer.hover.actions.run.enable',
 ];
 
-let schema = execSync('rust-analyzer --print-config-schema', { encoding: 'utf8' });
+let schema = execSync('wgsl-analyzer --print-config-schema', { encoding: 'utf8' });
 schema = JSON.parse(schema);
 for (const item of schema) {
   const p = item.properties;
